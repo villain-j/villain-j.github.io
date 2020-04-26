@@ -1,0 +1,24 @@
+# main links
+main:
+  - title: "About"
+    url: /about/
+  - title: "Category"
+    url: /categories/
+  - title: "LeetCode"
+    url: /categories/leetcode/
+  - title: "C Sharp"
+    url: /categories/csharp/
+  - title: "Books"
+    url: /categories/books/
+  - title: "Tools"
+    url: /categories/tools/
+  - title: "Blog"
+    url: /categories/blog/
+  # - title: "About"
+  #   url: https://mmistakes.github.io/minimal-mistakes/about/
+  # - title: "Sample Posts"
+  #   url: /year-archive/
+  # - title: "Sample Collections"
+  #   url: /collection-archive/
+  # - title: "Sitemap"
+  #   url: /sitemap/
