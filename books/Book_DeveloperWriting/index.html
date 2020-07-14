@@ -1,0 +1,583 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.17.2 by Michael Rose
+  Copyright 2013-2019 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="ko" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>개발자의 글쓰기 | Study Notes</title>
+<meta name="description" content="개발자의 글쓰기 후기">
+
+
+  <meta name="author" content="Alice">
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="ko_kr">
+<meta property="og:site_name" content="Study Notes">
+<meta property="og:title" content="개발자의 글쓰기">
+<meta property="og:url" content="https://hyeyoung0112.github.io//books/Book_DeveloperWriting/">
+
+
+  <meta property="og:description" content="개발자의 글쓰기 후기">
+
+
+
+  <meta property="og:image" content="https://hyeyoung0112.github.io//assets/images/masthead.jpg">
+
+
+
+
+
+  <meta property="article:published_time" content="2020-03-08T00:00:00+00:00">
+
+
+
+
+
+
+<link rel="canonical" href="https://hyeyoung0112.github.io//books/Book_DeveloperWriting/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": "Alice",
+      "url": "https://hyeyoung0112.github.io//"
+    
+  }
+</script>
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+<link href="/feed.xml" type="application/atom+xml" rel="alternate" title="Study Notes Feed">
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+
+<!--[if IE]>
+  <style>
+    /* old IE unsupported flexbox fixes */
+    .greedy-nav .site-title {
+      padding-right: 3em;
+    }
+    .greedy-nav button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+  </style>
+<![endif]-->
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--single wide">
+    <nav class="skip-links">
+  <h2 class="screen-reader-text">Skip links</h2>
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+           
+          
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/about/" >About</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories/" >Category</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories/leetcode/" >LeetCode</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories/csharp/" >C Sharp</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories/books/" >Books</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories/tools/" >Tools</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories/blog/" >Blog</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <svg class="icon" width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15.99 16">
+            <path d="M15.5,13.12L13.19,10.8a1.69,1.69,0,0,0-1.28-.55l-0.06-.06A6.5,6.5,0,0,0,5.77,0,6.5,6.5,0,0,0,2.46,11.59a6.47,6.47,0,0,0,7.74.26l0.05,0.05a1.65,1.65,0,0,0,.5,1.24l2.38,2.38A1.68,1.68,0,0,0,15.5,13.12ZM6.4,2A4.41,4.41,0,1,1,2,6.4,4.43,4.43,0,0,1,6.4,2Z" transform="translate(-.01)"></path>
+          </svg>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+  
+
+
+
+
+
+
+
+
+
+
+
+<div class="page__hero"
+  style=" "
+>
+  
+    <img src="/assets/images/masthead.jpg" alt="개발자의 글쓰기" class="page__hero-image">
+  
+  
+</div>
+
+
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person">
+
+  
+    <div class="author__avatar">
+      
+
+      
+        <img src="/assets/images/profile.jpg" alt="Alice" itemprop="image">
+      
+    </div>
+  
+
+  <div class="author__content">
+    
+      <h3 class="author__name" itemprop="name">Alice</h3>
+    
+    
+      <div class="author__bio" itemprop="description">
+        
+
+      </div>
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+        <li itemprop="homeLocation" itemscope itemtype="https://schema.org/Place">
+          <i class="fas fa-fw fa-map-marker-alt" aria-hidden="true"></i> <span itemprop="name">Wonderland</span>
+        </li>
+      
+
+      
+        
+          
+            <li><a href="malito:hyeyoung0112@gmail.com" rel="nofollow noopener noreferrer"><i class="fas fa-fw fa-envelope-square" aria-hidden="true"></i> Email</a></li>
+          
+        
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="개발자의 글쓰기">
+    <meta itemprop="description" content="개발자의 글쓰기 후기">
+    <meta itemprop="datePublished" content="March 08, 2020">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">개발자의 글쓰기
+</h1>
+          
+            <p class="page__date"><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated: <time datetime="2020-03-08T00:00:00+00:00">March 08, 2020</time></p>
+          
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+        <h4 id="개발자의-글쓰기-후기">개발자의 글쓰기 후기</h4>
+
+<blockquote>
+  <p>제목: 개발자의 글쓰기</p>
+
+  <p>저자: 김철수</p>
+
+  <p>출판사: 위키북스</p>
+
+  <p>출간일: 2019.10.04</p>
+</blockquote>
+
+<hr />
+
+<p><strong>목차</strong></p>
+
+<ol>
+  <li>개발자가 알아야 할 글쓰기 기본</li>
+  <li>개발 시간을 줄여주는 이름 짓기와 주석 쓰기</li>
+  <li>사용자와 소통하는 에러 메시지 쓰기</li>
+  <li>독자 관점에서 릴리스 문서와 장애 보고서 쓰기</li>
+  <li>설명, 묘사, 논증, 서사로 개발 가이드 쓰기</li>
+  <li>수주를 돕는 SI 제안서 쓰기</li>
+  <li>기술 블로그 쉽게 쓰고 운영하기</li>
+</ol>
+
+<hr />
+
+<p>사용하는 툴의 사용 방법을 설명하는 방법을 고민하다가 글을 너무 정리하지 못하는 것 같아서 책 표지와 제목만 보고 사서 읽은 책이다. 결론부터 말하자면 나쁘지는 않았지만 큰 도움도 되지 않았다.</p>
+
+<p>독자를 고려해서 글을 쓰면 된다는 것… 모두가 알지만 여러 번 연습하기 전에는 어려운 일이다. 그리고 지금 돌이켜보면 이 책을 살 때 겪었던 어려움은 내 글의 문제도 있지만 그 이전에 내가 쓰려는 내용 자체를 내 머릿속에서 제대로 정리하지 못했던 것 같다.</p>
+
+<p>대학교 때 발표 위주 강의에서 교수님이 하셨던 말씀이 생각난다. 발표할 때 대본을 다 외운다고 되는 게 아니다. 발표할 내용이 잘 정리되서 머릿속에 들어있고 그 내용에 대해 명확하게 이해한 상태라면 대본은 더 이상 의미가 없고 듣는 사람도 훨씬 명료하게 이해할 수 있다고. 이해하지 못한 상태에서 대본만 외워서 말하면 듣는 사람도 이해를 못한다고. 글쓰기도 마찬가지 아닐까. 내가 다루려는 내용이 명확하고 그에 대해서 제대로 이해도 한 상태라면 글을 쓰는 것은 웬만해서는 문제가 아니다.</p>
+
+<p>이 책 독후감 결론은 내가 문제였던 걸로… ^v^;;</p>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+
+  
+
+
+  
+  
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords">
+    
+      
+      
+      <a href="/categories/#books" class="page__taxonomy-item" rel="tag">books</a>
+    
+    </span>
+  </p>
+
+
+        
+          <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time datetime="2020-03-08T00:00:00+00:00">March 08, 2020</time></p>
+        
+      </footer>
+
+      <section class="page__share">
+  
+
+  <a href="https://twitter.com/intent/tweet?text=%EA%B0%9C%EB%B0%9C%EC%9E%90%EC%9D%98+%EA%B8%80%EC%93%B0%EA%B8%B0%20https%3A%2F%2Fhyeyoung0112.github.io%2F%2Fbooks%2FBook_DeveloperWriting%2F" class="btn btn--twitter" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter"><i class="fab fa-fw fa-twitter" aria-hidden="true"></i><span> Twitter</span></a>
+
+  <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fhyeyoung0112.github.io%2F%2Fbooks%2FBook_DeveloperWriting%2F" class="btn btn--facebook" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook"><i class="fab fa-fw fa-facebook" aria-hidden="true"></i><span> Facebook</span></a>
+
+  <a href="https://www.linkedin.com/shareArticle?mini=true&url=https%3A%2F%2Fhyeyoung0112.github.io%2F%2Fbooks%2FBook_DeveloperWriting%2F" class="btn btn--linkedin" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on LinkedIn"><i class="fab fa-fw fa-linkedin" aria-hidden="true"></i><span> LinkedIn</span></a>
+</section>
+
+
+      
+  <nav class="pagination">
+    
+      <a href="#" class="pagination--pager disabled">Previous</a>
+    
+    
+      <a href="/blog/FirstPost/" class="pagination--pager" title="Github.io Blog 시작
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+    <div class="page__related">
+      <h4 class="page__related-title">You May Also Enjoy</h4>
+      <div class="grid__wrapper">
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/csharp/CLR/" rel="permalink">CLR의 실행 모델
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-fw fa-calendar-alt" aria-hidden="true"></i> July 14 2020</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">
+  Compiling Source Code into Managed Module
+
+
+</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/csharp/SynchronizationContext/" rel="permalink">SynchronizationContext in C#
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-fw fa-calendar-alt" aria-hidden="true"></i> June 30 2020</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">
+  원본 출처: Parallel Computing - It’s All About the SynchronizationContext
+
+
+</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/books/Object/" rel="permalink">조영호 저 Object를 읽고
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-fw fa-calendar-alt" aria-hidden="true"></i> June 28 2020</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">
+  제목: 오브젝트
+
+  저자: 조영호
+
+  출판사: 위키북스
+
+  출간일: 2019.06.17
+
+
+</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/leetcode/LeetCode_SubarraySumEqualsK/" rel="permalink">LeetCode Subarray Sum Equals K
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-fw fa-calendar-alt" aria-hidden="true"></i> April 22 2020</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">Problem
+
+</p>
+  </article>
+</div>
+
+        
+      </div>
+    </div>
+  
+  
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+
+    <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2020 Alice. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+  <script src="https://kit.fontawesome.com/4eee35f757.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+
+
+
+
+  </body>
+</html>

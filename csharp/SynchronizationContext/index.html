@@ -1,0 +1,780 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.17.2 by Michael Rose
+  Copyright 2013-2019 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="ko" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>SynchronizationContext in C# | Study Notes</title>
+<meta name="description" content="  원본 출처: Parallel Computing - It’s All About the SynchronizationContext">
+
+
+  <meta name="author" content="Alice">
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="ko_kr">
+<meta property="og:site_name" content="Study Notes">
+<meta property="og:title" content="SynchronizationContext in C#">
+<meta property="og:url" content="https://hyeyoung0112.github.io//csharp/SynchronizationContext/">
+
+
+  <meta property="og:description" content="  원본 출처: Parallel Computing - It’s All About the SynchronizationContext">
+
+
+
+  <meta property="og:image" content="https://hyeyoung0112.github.io//assets/images/masthead.jpg">
+
+
+
+
+
+  <meta property="article:published_time" content="2020-06-30T00:00:00+00:00">
+
+
+
+
+
+
+<link rel="canonical" href="https://hyeyoung0112.github.io//csharp/SynchronizationContext/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": "Alice",
+      "url": "https://hyeyoung0112.github.io//"
+    
+  }
+</script>
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+<link href="/feed.xml" type="application/atom+xml" rel="alternate" title="Study Notes Feed">
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+
+<!--[if IE]>
+  <style>
+    /* old IE unsupported flexbox fixes */
+    .greedy-nav .site-title {
+      padding-right: 3em;
+    }
+    .greedy-nav button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+  </style>
+<![endif]-->
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--single wide">
+    <nav class="skip-links">
+  <h2 class="screen-reader-text">Skip links</h2>
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+           
+          
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/about/" >About</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories/" >Category</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories/leetcode/" >LeetCode</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories/csharp/" >C Sharp</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories/books/" >Books</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories/tools/" >Tools</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories/blog/" >Blog</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <svg class="icon" width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15.99 16">
+            <path d="M15.5,13.12L13.19,10.8a1.69,1.69,0,0,0-1.28-.55l-0.06-.06A6.5,6.5,0,0,0,5.77,0,6.5,6.5,0,0,0,2.46,11.59a6.47,6.47,0,0,0,7.74.26l0.05,0.05a1.65,1.65,0,0,0,.5,1.24l2.38,2.38A1.68,1.68,0,0,0,15.5,13.12ZM6.4,2A4.41,4.41,0,1,1,2,6.4,4.43,4.43,0,0,1,6.4,2Z" transform="translate(-.01)"></path>
+          </svg>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+  
+
+
+
+
+
+
+
+
+
+
+
+<div class="page__hero"
+  style=" "
+>
+  
+    <img src="/assets/images/masthead.jpg" alt="SynchronizationContext in C#" class="page__hero-image">
+  
+  
+</div>
+
+
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person">
+
+  
+    <div class="author__avatar">
+      
+
+      
+        <img src="/assets/images/profile.jpg" alt="Alice" itemprop="image">
+      
+    </div>
+  
+
+  <div class="author__content">
+    
+      <h3 class="author__name" itemprop="name">Alice</h3>
+    
+    
+      <div class="author__bio" itemprop="description">
+        
+
+      </div>
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+        <li itemprop="homeLocation" itemscope itemtype="https://schema.org/Place">
+          <i class="fas fa-fw fa-map-marker-alt" aria-hidden="true"></i> <span itemprop="name">Wonderland</span>
+        </li>
+      
+
+      
+        
+          
+            <li><a href="malito:hyeyoung0112@gmail.com" rel="nofollow noopener noreferrer"><i class="fas fa-fw fa-envelope-square" aria-hidden="true"></i> Email</a></li>
+          
+        
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="SynchronizationContext in C#">
+    <meta itemprop="description" content="  원본 출처: Parallel Computing - It’s All About the SynchronizationContext">
+    <meta itemprop="datePublished" content="June 30, 2020">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">SynchronizationContext in C#
+</h1>
+          
+            <p class="page__date"><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated: <time datetime="2020-06-30T00:00:00+00:00">June 30, 2020</time></p>
+          
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+        <blockquote>
+  <p>원본 출처: <a href="https://docs.microsoft.com/en-us/archive/msdn-magazine/2011/february/msdn-magazine-parallel-computing-it-s-all-about-the-synchronizationcontext">Parallel Computing - It’s All About the SynchronizationContext</a></p>
+</blockquote>
+
+<p>C#을 쓰면서 처음 본 SynchronizationContext에 대해 찾아보다가 MSDN 글이 한글 버젼이 없길래… 9년 전 글이지만 번역 반 가볍게 정리해놓는 마음 반으로 쓰는 글.</p>
+
+<hr />
+
+<p>SynchronizationContext는 멀티 스레딩을 조금 더 간편하게 쓸 수 있도록 .NET 프레임워크에서 제공하는 도구이다. ASP.NET, Windows Forms, Windows Presentation Foundation (WPF), Silverlight 등등 모든 .NET 프로그램에서 사용할 수 있는 유용한 도구이다.</p>
+
+<h2 id="synchronizationcontext가-필요한-이유">SynchronizationContext가 필요한 이유</h2>
+
+<p>멀티스레딩 프로그램은 .NET 프레임워크 전부터 존재했었다. 보통 멀티스레딩 프로그램은 다른 스레드로 현재 스레드가 처리한 일을 넘기도록 구현할 필요가 있다. 기존 Windows 프로그램은 메시지 루프를 중심으로 돌아갔기 때문에 많은 프로그래들은 작업을 전달하기 위해 빌트인 큐를 사용해야 했다. Windows 메시지 큐를 쓰고 싶은 멀티스레딩 프로그램은 각자의 Windows 메시지를 커스텀하고 이를 처리하는 컨벤션을 만들어야 했다.</p>
+
+<p>.NET 프레임워크가 처음으로 공개되면서, 이 패턴은 표준화되었다. 당시 .NET이 지원하는 유일한 GUI 어플리케이션은 Windows Forms이었다. 그러나 프레임워크 설계자들은 다른 모델을 대비해 보다 제네릭한 방법인 ISynchronizeInvoke라는 것을 만들었다.</p>
+
+<p>ISynchronizeInvoke의 기본적인 아이디어는 source 스레드가 target 스레드에게 델리게이트를 큐잉시키고, 선택적으로 해당 델리게이트가 완료될 때까지 기다히는 것이다. 또한 현재 코드가 이미 target 스레드에서 실행되고 있는지를 확인할 수 있는 방법도 제공해 불필요하게 델리게이트가 큐잉되는 것 또한 막을 수 있었다. Windows Forms가 ISynchronizeInvoke의 구현을 제공했고, 비동기 컴포넌트를 설계하는 패턴이 만들어졌다. 모두가 행복:)</p>
+
+<p>.NET 프레임워크 2.0에는 많은 변화가 있었다. ASP.NET 아키텍쳐에 비동기 페이지를 지원하기 시작한 것도 이 때이다. .NET 프레임워크 2.0전에는, 모든 ASP.NET의 요청은 각 요청이 완료될 때까지 스레드 하나가 필요했다. 이는 굉장히 비효율적이었는데, 웹 페이지 생성은 대부분 DB 쿼리와 웹 서비스 호출이 큰 부분이었기 떄문에 해당 요청을 처리하는 스레드는 각각의 오퍼레이션이 완료될 때까지 기다려야 했다. 비동기 페이지가 생긴 후로, 요청을 관리하는 스레드는 연산을 시작해놓고 다시 ASP.NET의 스레드 풀로 돌아가 쓰일 수 있게 되었다. 연산이 끝나면, 스레드 풀의 다른 스레드가 해당 요청을 완료 처리할 수 있었다.</p>
+
+<p>그러나, ISynchronizeInvoke는 ASP.NET의 비동기 페이지 아키텍쳐에 적합하지 않았다. ASP.NET의 비동기 페이지는 하나의 스레드와 연관된 것이 아니었기 때문에 ISynchronizeInvoke 패턴으로 만들어진 비동기 컴포넌트들은 제대로 동작하지 않았다. 원래 스레드에 작업을 큐잉하는 방법 대신, 비동기 페이지는 페이지 요청이 완료되는지를 결정하기 위해 필요한 연산의 개수만 유지하기만 하면 됐다. 이 필요성에서 새롭게 설계된 SynchronizationContext가 ISynchronizeInvoke를 대신하게 되었다.</p>
+
+<h2 id="synchronizationcontext의-개념">SynchronizationContext의 개념</h2>
+
+<p>ISynchronizeInvoke는 두 가지 필요를 만족했다. 하나는 동기화가 필요한지 결정하는 것이었고, 다른 하나는 한 스레드에서 다른 스레드로 작업을 큐잉하는 것이었다. SynchronizationContext는 ISynchronizeInvoke를 대체하기 위해 만들어졌지만, 설계 후 기존 ISynchronizeInvoke를 정확히 대체하지는 않게 되었다.</p>
+
+<p>SynchronizationContext는 작업을 context에 큐잉할 수 있는 방법을 제공해준다. 여기서 유의할 점은 작업을 특정 스레드가 아니라 context에 큐잉한다는 것이다. 아 차이는 SynchronizationContext 구현이 대부분 하나의 특정 스레드를 기준으로 하지 않는다는 점에서 매우 중요하다. 또한 SynchronizationContext는 동기화가 필요한지를 결정하는 메커니즘을 포함하지 않는데, 이를 결정하는 것이 언제나 가능한 것은 아니었기 때문이다.</p>
+
+<p>SynchronizationContext의 또 다른 특징은 각 스레드가 “current” context를 갖는다는 것이다. 각 스레드의 context는 꼭 유니크하지는 앟으며, 다른 스레드와 context 인스턴스를 공유할 수 있다. 또한 스레드가 현재 자신의 context를 바꾸는 것 또한 (드물게 쓰이지만) 가능하다.</p>
+
+<p>SynchronizationContext의 세 번째 특징은 현재 진행되는 비동기 연산의 개수를 가지고 있다는 것이다. 이는 ASP.NET의 비동기 페이지나 이런 종류의 개수에 관한 정보가 필요한 다른 호스트를 사용할 수 있게 해준다. 대부분의 경우에서, 현재 SynchronizationContext가 캡쳐될 때마다 count가 늘어나고, 캡쳐된 SynchronizationContext로 context에 완료를 노티할 때마다 count가 줄어든다.</p>
+
+<p>SynchronizationContext에는 다른 특징들도 많지만, 이는 대부분의 프로그래머에게 중요하지 않은 것들이다. 가장 중요한 특징들을 Figure 1에 요약해 보았다.</p>
+
+<p><strong>Figure 1</strong> Aspects of the SynchronizationContext API</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// The important aspects of the SynchronizationContext APIclass SynchronizationContext 
+{
+	// Dispatch work to the context.
+	void Post(..); // (asynchronously)
+	void Send(..); // (synchronously)
+	// Keep track of the number of asynchronous operations.
+ 	void OperationStarted();
+	void OperationCompleted();
+	// Each thread has a current context.
+	// If "Current" is null, then the thread's current context is
+	// "new SynchronizationContext()", by convention.
+	static SynchronizationContext Current { get; }
+	static void SetSynchronizationContext(SynchronizationContext);
+}
+</code></pre></div></div>
+
+<h2 id="synchronizationcontext의-구현들">SynchronizationContext의 구현들</h2>
+
+<p>SynchronizationContext의 실제 “context”는 정확히 정의되지 않는다. 각각의 프레임워크와 호스트는 각자의 context를 정의할 수 있다. 이런 다양한 구현과 한계를 이해하면 SynchronizationContext의 개념이 무엇을 보장하고 보장하지 않는지 알 수 있다. 간략하게 구현 몇 가지를 소개하겠다.</p>
+
+<p><strong>WindowsFormsSynchronizationContext</strong> (<em>System.Windows.Forms.dll: System.Windows.Forms</em>)</p>
+
+<p>Windows Forms 앱에서 사용하는 SynchronizationContext. UI 제어를 생성하는 스레드에서 사용된다. 여기서는 UI 제어를 위해 ISynchronizeInvoke 메서드를 사용하고, ISynchronizeInvoke 메서드는 내재된 Win32 메시지 루프에 델리게이트를 전달한다. WindowsFormsSynchronizationContext의 context는 하나의 UI 스레드이다. WindowsFormsSynchronizationContext에 큐잉된 델리게이트는 한 번에 하나씩만 특정 UI 스레드에 의해 큐잉된 순서대로 수행된다. 현재의 구현은 하나의 UI 스레드마다 하나의 WindowsFormsSynchronizationContext를 생성한다.</p>
+
+<p><strong>DispatcherSynchronizationContext</strong> (<em>WindowsBase.dll: System.Windows.Threading</em>)</p>
+
+<p>WPF와 Silverlight 앱에서는 DispatcherSynchronizationContext를 사용한다. DispatcherSynchronizationContext는 UI 스레드의 Dispatcher에게 “보통” 수준의 우선순위로 델리게이트들을 큐잉한다. 스레드가 Dispatcher를 호출함으로써 Dispatcher loop을 시작할 때 SynchronizationContext가 설치된다. DispatcherSynchronizationContext에서의 context도 위와 마찬가지로 하나의 UI 스레드이다. 따라서 델리게이트가 수행되는 방식도 한 번에 하나씩 큐잉된 순서대로 특정 UI 스레드에 의해서 수행되는 방식으로 위와 같다. 현재 구현은 각각의 top-level window 하나당 DispatcherSynchronizationContext를 하나씩 생성한다. (같은 Dispatcher를 사용할지라도!)</p>
+
+<p><strong>Default (ThreadPool) SynchronizationContext</strong> (<em>mscorlib.dll: System.Threading</em>)</p>
+
+<p>디폴트로 제공되는 SynchronizationContext는 default-constructed SynchronizationContext object이다. 스레드의 현재 SynchronizationContext가 null이라면, 이는 스레드가 디폴트 SynchronizationContext을 가지고 있음을 암시한다.</p>
+
+<p>디폴트 SynchronizationContext는 자신의 비동기 델리게이트들을 스레드 풀에 큐잉하지만 동기적인 델리게이트는 호출 스레드에서 바로 수행한다. 따라서, 이 context는 Send를 부르는 스레드와 스레드 풀의 스레드들을 모두 커버한다. context는 Send를 호출하는 스레드를 “빌리고”, 델리게이트가 완료될 때까지 context로 가져온다. 이 관점에서 보면 기본 context는 프로세스의 아무 스레드나 다 포함할 수 있다.</p>
+
+<p>스레드 풀의 스레드에는 코드가 ASP.NET에 의해 호스트되지 않는 한 디폴트 SynchronizationContext가 적용된다. 또한 Thread 클래스의 인스턴스들인 명시적인 자식 스레드에도 암시적으로 디폴트 SynchronizationContext가 적용된다. 따라서, UI 어플리케이션은 주로 두 종류의 synchronization context를 갖는다. UI SynchronizationContext는 UI 스레드에 적용되고, 디폴트 SynchronizationContext는 스레드 풀 스레드에 적용된다.</p>
+
+<p>많은 이벤트 기준의 비동기 컴포넌트들은 디폴트 SynchronizationContext로는 예상대로 작동하지 않는다. 제일 널리 알려진 예시는 BackgroundWorker 하나가 다른 BackgroundWorker를 시작시키는 UI 어플리케이션에서의 오류이다. 각각의 BackgroundWorker는 RunWorkerAsync를 호출하는 스레드의 SynchronizationContext를 가져와 사용한다. 그렇게 가져온 context에서 RunWorkerCompleted 이벤트를 실행한다. 하나의 BackgroundWorker가 있을 경우, <strong>Figure 2</strong>처럼 RunWorkerAsync는 UI의 context에서 RunWorkerCompleted가 실행되게 한다.</p>
+
+<p><img src="https://docs.microsoft.com/en-us/archive/msdn-magazine/2011/february/images/gg598924.cleary_figure2_hires(en-us%2cmsdn.10).jpg" alt="image: A Single BackgroundWorker in a UI Context" /></p>
+
+<p><strong>Figure 2</strong> A Single BackgroundWorker in a UI Context</p>
+
+<p>그러나 만일 BackgroundWorker가 DoWork 핸들러에서 또 다른 BackgroundWorker를 부른다면, nested BackgroundWorker는 UI SynchronizationContext가 아닌 디폴트 SynchronizationContext를 가져오게 된다. 따라서 이 BackgroundWorker는 <strong>Figure 3</strong> 처럼 스레드 풀에서 RunWorkerCompleted를 실행하게 할 것이다.</p>
+
+<p><img src="https://docs.microsoft.com/en-us/archive/msdn-magazine/2011/february/images/gg598924.cleary_figure3_hires(en-us%2cmsdn.10).jpg" alt="image: Nested BackgroundWorkers in a UI Context" /></p>
+
+<p><strong>Figure 3</strong> Nested BackgroundWorkers in a UI Context</p>
+
+<p>기본적으로 콘솔 어플리케이션과 Windows 서비스의 모든 스레드는 디폴트 SynchronizationContext 만을 가진다. 이 때문에 몇 개의 event 기준의 비동기 컴포넌트가 제대로 작동하지 않는다. 이를 해결하기 위한 한 방법은 하나의 명시적인 자식 스레드를 생성하고, 해당 스레드에 SynchronizationContext를 설치해 이 context가 문제가 되는 컴포넌트들에게 context를 제공하게 하는 것이다. 이에 관한 자세한 내용은 이 기사 대신 Nito.Async library (<a href="http://nitoasync.codeplex.com/">nitoasync.codeplex.com</a>) 를 참고해보자! (2011년 기사인데.. 지금도 살아있으려나..?)</p>
+
+<h2 id="synchronizationcontext의-구현에-대해-참고할-것">SynchronizationContext의 구현에 대해 참고할 것</h2>
+
+<p>SynchronizationContext는 다양한 프레임워크에서 작동할 수 있는 컴포넌트를 작성할 방법을 제공한다. BackgroundWorker나 WebClient가 Windows Forms, WPF, Silverlight, console, ASP.NET 어플리케이션 모두에서 작동될 수 있는 컴포넌트로 좋은 예시이다. 그러나 이처럼 재사용할 수 있는 컴포넌트를 작성하기 위해서는 기억해두어야 할 것이 있다.</p>
+
+<p>일반적으로, SynchronizationContext의 구현은 동일성을 비교할 수 없다. 이는 ISynchronizeInvoke.InvokeRequired를 대체할 수 있는 것이 없다는 뜻이다. 그러나 이는 치명적인 단점은 아니다. 여러 context를 다루려고 시도하는 것보다는 이미 알고 있는 context 안에서만 실행되는 코드가 훨씬 더 깔끔하고 검증하기 쉽다.</p>
+
+<p>또한 SynchronizationContext의 구현이 델리게이트 수행 순서나 델리게이트의 동기화를 무조건 보장하지는 않는다. UI 기준의 SynchronizationContext 구현은 이를 만족하지만, ASP.NET의 SynchronizationContext는 동기화만 제공한다. 디폴트 SynchronizationContext는 수행 순서와 동기화 모두 보장하지 않는다.</p>
+
+<p>또한 SynchronizationContext과 스레드 간의 1대 1 관계도 성립하지 않는다. WindowsFormsSynchronizationContext는 SynchronizationContext.CreateCopy를 호출하지 않는 한 1:1 매핑이 있지만 다른 구현에서는 모두 성립하지 않는다. 따라서 어떤 context 인스턴스도 특정 스레드에서 수행될 것이라고 가정하지 않는 것이 안전하다.</p>
+
+<p>마지막으로, SynchronizationContext.Post 메서드는 항상 비동기이지 않다. 대부분의 구현이 Post를 비동기로 구현하기는 하지만, AspNetSynchronizationContext가 그러지 않는 대표적인 예외이다. 이는 예상치 못한 re-entrancy 이슈를 일으킬 수 있다.</p>
+
+<p><strong>Figure 4</strong>에서 SynchronizationContext의 다양한 구현에 대한 요약을 확인할 수 있다.</p>
+
+<p>Figure 4 <strong>Summary of SynchronizationContext Implementations</strong></p>
+
+<table>
+  <thead>
+    <tr>
+      <th> </th>
+      <th><strong>Specific Thread Used to Execute Delegates</strong></th>
+      <th><strong>Exclusive (Delegates Execute One at a Time)</strong></th>
+      <th><strong>Ordered (Delegates Execute in Queue Order)</strong></th>
+      <th><strong>Send May Invoke Delegate Directly</strong></th>
+      <th><strong>Post May Invoke Delegate Directly</strong></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Windows Forms</strong></td>
+      <td>Yes</td>
+      <td>Yes</td>
+      <td>Yes</td>
+      <td>If called from UI thread</td>
+      <td>Never</td>
+    </tr>
+    <tr>
+      <td><strong>WPF/Silverlight</strong></td>
+      <td>Yes</td>
+      <td>Yes</td>
+      <td>Yes</td>
+      <td>If called from UI thread</td>
+      <td>Never</td>
+    </tr>
+    <tr>
+      <td><strong>Default</strong></td>
+      <td>No</td>
+      <td>No</td>
+      <td>No</td>
+      <td>Always</td>
+      <td>Never</td>
+    </tr>
+    <tr>
+      <td><strong>ASP.NET</strong></td>
+      <td>No</td>
+      <td>Yes</td>
+      <td>No</td>
+      <td>Always</td>
+      <td>Always</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="asyncoperationmanager-and-asyncoperation">AsyncOperationManager and AsyncOperation</h2>
+
+<p>.NET 프레임워크의 AsyncOperationManager와 AsyncOperation 클래스는 SynchronizationContext의 추상화를 감싸는 가벼운 wrapper이다. AsyncOperationManager는 처음으로 AsyncOperation을 생성할 때 현재의 SynchronizationContext를 가져온다. 만일 현재 SynchronizationContext가 null이라면 이를 디폴트 SynchronizationContext로 대체한다. AsyncOperation은 가져온 SynchronizationContext에 비동기적으로 델리게이트를 post한다.</p>
+
+<p>대부분의 event-based 비동기 컴포넌트의 구현에서 AsyncOperationManger와 AsyncOperation을 사용한다. AsyncOperationManager와 AsyncOperation은 완료 시점이 정의된 비동기 연산에서 편리하게 쓰인다. 완료 시점이 정의됐다는 건 다른 말로는 비동기 연산이 한 시점에서 시작해 다른 시점에서 이벤트와 함께 끝난다는 것이다. 다른 비동기 알림은 완료 시점이 정의되지 않을 수도 있다. subscription과 같이 한 시점에서 시작해 완료되지 않고 계속 진행될 수 있다는 것이다. 이런 연산의 경우에는 SynchronizationContext를 바로 가져와서 직접 사용하면 된다.</p>
+
+<p>새로운 컴포넌트는 더 이상 이벤트 기반의 비동기 패턴을 사용해서는 안된다. 비쥬얼 스튜디오의 비동기 Community Technology Preview (CTP) 에 task 기반의 비동기 패턴에 대한 문서가 있는데, 이는 SynchronizationContext를 통해 이벤트를 생성하는 대신 Task와 Task&lt;TResult&gt; 객체를 사용하는 방법을 다룬다. Task 기반 API가 .NET에서 비동기 프로그래밍의 미래다! :angel:</p>
+
+<h2 id="examples-of-library-support-for-synchronizationcontext">Examples of Library Support for SynchronizationContext</h2>
+
+<p>BackgroundWorker나 WebClient처럼 간단한 컴포넌트들은 SynchronizationContext를 밖으로 노출하지 않고 암시적으로만 사용할 수 있다. 그러다 다른 많은 라이브러리들에서는 SynchronizationContext의 사용이 더 분명히 드러난다. SynchronizationContext를 사용하는 API를 제공함으로써, 라이브러리는 프레임워크에 대해 독립적으로 변할 뿐만 아니라 숙련된 엔드 사용자에게 확장할 수 있는 포인트를 제공한다.</p>
+
+<p>앞으로 논의할 라이브러리 말고도, 현재 SynchronizationContext는 ExecutionContext의 일부이다. 스레드의 ExecutionContext를 사용하는 시스템은 SynchronizationContext도 사용한다. ExecutionContext가 restore되면 SynchronizationContext 또한 restore된다.</p>
+
+<p><strong>Task Parallel Library (TPL): TaskScheduler.FromCurrentSynchronizationContext and CancellationToken.Register</strong> TPL에서는 Task 객체를 작업의 단위로 사용하고 TaskScheduler를 이용해 작업을 진행한다. 디폴트 TaskScheduler는 디폴트 SynchronizationContext처럼 스레드 풀에 task를 큐잉한다. TPL queue가 제공하는 또 다른 TaskScheduler는 SynchronizationContext에 task를 큐잉한다. UI 업데이트는 <strong>Figure 5</strong> 에서처럼 nested task에서 수행될 수 있다.</p>
+
+<p><strong>Figure 5</strong> Progress Reporting with UI Updates</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code>private void button1_Click(object sender, EventArgs e)
+{
+  // This TaskScheduler captures SynchronizationContext.Current.
+  TaskScheduler taskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
+  // Start a new task (this uses the default TaskScheduler, 
+  // so it will run on a ThreadPool thread).
+  Task.Factory.StartNew(() =&gt;
+  {
+    // We are running on a ThreadPool thread here.
+	// Do some work.
+	// Report progress to the UI.
+    Task reportProgressTask = Task.Factory.StartNew(() =&gt;
+      {
+        // We are running on the UI thread here.
+        ; // Update the UI with our progress.
+      },
+      CancellationToken.None,
+      TaskCreationOptions.None,
+      taskScheduler);
+    reportProgressTask.Wait();
+	
+	// Do more work.
+  });
+}
+</code></pre></div></div>
+
+<p>CancellationToken 클래스는 .NET 프레임워크 4.0에서 여러 종류의 취소를 할 때 쓰인다. 기존의 취소 방식과 통합하기 위해서, 이 클래스는 취소가 요청되었을 때 델리게이트를 실행할 수 있도록 한다.델리게이트가 등록되면, SynchronizationContext가 전달될 수 있다. 취소가 요청되면, CancellationToken은 직접 델리게이트를 실행하는 대신 SynchronizationContext에 델리게이트를 큐잉한다.</p>
+
+<p>​</p>
+
+<h2 id="limitations-and-guarantees">Limitations and Guarantees</h2>
+
+<p>이 문단 문장을 요약하면 뭐든 알아두면 좋다 ^-ㅠ 크로스 프레임워크 컴포넌트나 라이브러리에서 사용하는 SynchronizationContext가 뭘 할 수 있고 뭘 하지 못하는지 이해하면 관련 코드를 써먹기 좋으니까! 그리고 뭐든… 모르는 상태에서 그래서 이게 도대체 뭔데?! :angry: 하는 것보다 뭔지 대강 알아놓으면 마주쳤을 때 아 나 얘 알아! 하고 이해하는 과정이 좀 더 즐거우니까.</p>
+
+<hr />
+
+<p><strong>Stephen Cleary</strong> <em>has had an interest in multithreading ever since he first heard of the concept. He’s completed many business-critical multitasking systems for major clients including Syracuse News, R. R. Donnelley and BlueScope Steel. He regularly speaks at .NET user groups, BarCamps and Day of .NET events near his home in Northern Michigan, usually on a multithreading topic. He maintains a programming blog at <a href="http://nitoprograms.com/">nitoprograms.com</a>.</em></p>
+
+<p><em>Thanks to the following technical expert for reviewing this article: <strong>Eric Eilebrecht</strong></em></p>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+  
+
+
+  
+  
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags: </strong>
+    <span itemprop="keywords">
+    
+      
+      
+      <a href="/tags/#asyncprogramming" class="page__taxonomy-item" rel="tag">AsyncProgramming</a><span class="sep">, </span>
+    
+      
+      
+      <a href="/tags/#csharp" class="page__taxonomy-item" rel="tag">CSharp</a><span class="sep">, </span>
+    
+      
+      
+      <a href="/tags/#synchronizationcontext" class="page__taxonomy-item" rel="tag">SynchronizationContext</a>
+    
+    </span>
+  </p>
+
+
+
+
+  
+
+
+  
+  
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords">
+    
+      
+      
+      <a href="/categories/#csharp" class="page__taxonomy-item" rel="tag">csharp</a>
+    
+    </span>
+  </p>
+
+
+        
+          <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time datetime="2020-06-30T00:00:00+00:00">June 30, 2020</time></p>
+        
+      </footer>
+
+      <section class="page__share">
+  
+
+  <a href="https://twitter.com/intent/tweet?text=SynchronizationContext+in+C%23%20https%3A%2F%2Fhyeyoung0112.github.io%2F%2Fcsharp%2FSynchronizationContext%2F" class="btn btn--twitter" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter"><i class="fab fa-fw fa-twitter" aria-hidden="true"></i><span> Twitter</span></a>
+
+  <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fhyeyoung0112.github.io%2F%2Fcsharp%2FSynchronizationContext%2F" class="btn btn--facebook" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook"><i class="fab fa-fw fa-facebook" aria-hidden="true"></i><span> Facebook</span></a>
+
+  <a href="https://www.linkedin.com/shareArticle?mini=true&url=https%3A%2F%2Fhyeyoung0112.github.io%2F%2Fcsharp%2FSynchronizationContext%2F" class="btn btn--linkedin" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on LinkedIn"><i class="fab fa-fw fa-linkedin" aria-hidden="true"></i><span> LinkedIn</span></a>
+</section>
+
+
+      
+  <nav class="pagination">
+    
+      <a href="/books/Object/" class="pagination--pager" title="조영호 저 Object를 읽고
+">Previous</a>
+    
+    
+      <a href="/csharp/CLR/" class="pagination--pager" title="CLR의 실행 모델
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+    <div class="page__related">
+      <h4 class="page__related-title">You May Also Enjoy</h4>
+      <div class="grid__wrapper">
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/csharp/CLR/" rel="permalink">CLR의 실행 모델
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-fw fa-calendar-alt" aria-hidden="true"></i> July 14 2020</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">
+  Compiling Source Code into Managed Module
+
+
+</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/books/Object/" rel="permalink">조영호 저 Object를 읽고
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-fw fa-calendar-alt" aria-hidden="true"></i> June 28 2020</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">
+  제목: 오브젝트
+
+  저자: 조영호
+
+  출판사: 위키북스
+
+  출간일: 2019.06.17
+
+
+</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/leetcode/LeetCode_SubarraySumEqualsK/" rel="permalink">LeetCode Subarray Sum Equals K
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-fw fa-calendar-alt" aria-hidden="true"></i> April 22 2020</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">Problem
+
+</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/leetcode/LeetCode_LeftmostColumnWithAtLeastOne/" rel="permalink">LeetCode Leftmost Column with at least One
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-fw fa-calendar-alt" aria-hidden="true"></i> April 21 2020</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">Problem
+
+</p>
+  </article>
+</div>
+
+        
+      </div>
+    </div>
+  
+  
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+
+    <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2020 Alice. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+  <script src="https://kit.fontawesome.com/4eee35f757.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+
+
+
+
+  </body>
+</html>

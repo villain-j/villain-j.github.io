@@ -1,0 +1,1078 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.7">Jekyll</generator><link href="https://hyeyoung0112.github.io//feed.xml" rel="self" type="application/atom+xml" /><link href="https://hyeyoung0112.github.io//" rel="alternate" type="text/html" /><updated>2020-07-14T13:05:27+00:00</updated><id>https://hyeyoung0112.github.io//feed.xml</id><title type="html">Study Notes</title><subtitle>공부 기록장</subtitle><author><name>Alice</name></author><entry><title type="html">CLR의 실행 모델</title><link href="https://hyeyoung0112.github.io//csharp/CLR/" rel="alternate" type="text/html" title="CLR의 실행 모델" /><published>2020-07-14T00:00:00+00:00</published><updated>2020-07-14T00:00:00+00:00</updated><id>https://hyeyoung0112.github.io//csharp/CLR</id><content type="html" xml:base="https://hyeyoung0112.github.io//csharp/CLR/">&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;Compiling Source Code into Managed Module&lt;/strong&gt;&lt;/p&gt;
+
+    &lt;p&gt;CLR: Common Language Runtime, 공용 언어 런타임&lt;/p&gt;
+
+    &lt;p&gt;CLR은 메모리 관리, 어셈블리 로딩, 보안, 예외처리, 쓰레드 동기화 등등을 관리한다.&lt;/p&gt;
+
+    &lt;p&gt;서로 다른 언어들이 사용할 수 있는 런타임 환경을 가리킨다. 각각의 언어를 CLR을 타깃으로 하는 컴파일러로 컴파일하면 managed module(PE32/PE32+)이 된다.&lt;/p&gt;
+
+    &lt;p&gt;Managed module에는&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;PE32/PE32+ header: file type(dll, gui, cui…)&lt;/li&gt;
+      &lt;li&gt;CLR header: CLR 모듈이 되게 만드는 정보를 가짐&lt;/li&gt;
+      &lt;li&gt;metadata: types, members, etc&lt;/li&gt;
+      &lt;li&gt;IL code: 컴파일러가 생성한 코드. 실행될 때 native CPU 명령어로 변환되어 실행된다.&lt;/li&gt;
+    &lt;/ul&gt;
+
+    &lt;p&gt;등의 내용이 있다.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;Combining Managed Module to Assemblies&lt;/strong&gt;&lt;/p&gt;
+
+    &lt;p&gt;Assembly: .NET 기반 어플리케이션에서의 기본 단위: 재사용, 보안, 버젼 제어 등에서의 기본 단위이다.&lt;/p&gt;
+
+    &lt;p&gt;1개 혹은 그 이상의 리소스 파일이 조합된 결과이다. “manifest”라는 metadata table을 가진다.&lt;/p&gt;
+
+    &lt;p&gt;.dll, .exe 파일 등의 형태로 존재한다.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;Loading the CLR&lt;/strong&gt;&lt;/p&gt;
+
+    &lt;p&gt;.NET 설치 필요&lt;/p&gt;
+
+    &lt;p&gt;Platform switch: 결과 모듈 설정 가능(CPU, 32/64 bit)&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;Executing Your Assembly’s Code&lt;/strong&gt;&lt;/p&gt;
+
+    &lt;p&gt;IL: CPU에 독립적인 기계어. 객체지향적인 기계어.&lt;/p&gt;
+
+    &lt;p&gt;메서드가 처음 불리면 JIT(Just In Time) 컴파일러가 해당 IL 코드를 native CPU instruction으로 변환하고, 이를 동적 메모리에 저장한다. (어플리케이션이 종료되면 날라감) 그 다음에 또 실행되면 바로 dynamic memory에 저장된 부분으로 이동해서 실행된다.&lt;/p&gt;
+
+    &lt;p&gt;생각보다 IL 코드 변환 / 동적 메모리 오버헤드로 인한 성능 저하가 크지 않고, 로컬 플랫폼에 최적화되게 코드를 생성하기 때문에 효율적이다.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;IL &amp;amp; Verification&lt;/strong&gt;&lt;/p&gt;
+
+    &lt;p&gt;IL은 스택을 기반으로 하고 타입이 정해져있지 않다. 이 때문에 verification을 통해 코드의 안전성을 테스트하고, verification이 보안을 보장한다. 이 때문에 같은 주소 공간에 여러 프로세스를 돌려도 안전하다.&lt;/p&gt;
+
+    &lt;p&gt;verification을 사용하지 않는 코드도 사용할 수는 있지만 위험하므로 시스템이 허용할 경우에만 실행 가능하다.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;The Native Code Generator Tool : NGen.exe&lt;/strong&gt;&lt;/p&gt;
+
+    &lt;p&gt;어플리케이션이 설치될 때 native code로 컴파일하게 하는 툴이다. 이를 통해 프로그램을 시작할 때 걸리는 시간이 감소하고, 여러 프로그램에서 공유할 수 있기 때문에 메모리 사용량이 감소한다. 그러나 코드가 유출될 가능성이 있고, 현재 로컬 환경과 설치될 때의 환경이 달라 생길 수 있는 문제, 실행 시간이 증가하는 문제 또한 안고 있다.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;The Framework Class Library(FCL)&lt;/strong&gt;&lt;/p&gt;
+
+    &lt;p&gt;.NET 프레임워크에서 시스템 기능을 사용할 수 있도록 제공하는 라이브러리.&lt;/p&gt;
+
+    &lt;p&gt;유틸리티 기능, 운영체제 기능 wrapper, 프레임워크를 위한 FCL들이 존재한다.&lt;/p&gt;
+
+    &lt;p&gt;System, System.Collections, System.IO, System,Linq 등등 없어서는 안 될 소중한 라이브러리들!&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;Common Type System(CTS)&lt;/strong&gt;&lt;/p&gt;
+
+    &lt;p&gt;CLR에서 다른 언어로 쓰인 코드와 상호작용할 수 있도록 공통적인 Type을 정의하고 사용 방법을 설명하기 위한 공식 규약이다.&lt;/p&gt;
+
+    &lt;p&gt;Type의 종류에는 Class, Structure, Enum, Interface, Delegate가 있다.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;Common Language Specification(CLS)&lt;/strong&gt;&lt;/p&gt;
+
+    &lt;p&gt;여러 언어가 공통적으로 가지고 있어 사용할 수 있는 부분을 정의한다. CTS의 부분 집합으로, CTS에서의 규칙은 모두 CLS에 적용된다.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;Interoperability with Unmanaged Code&lt;/strong&gt;&lt;/p&gt;
+
+    &lt;p&gt;Managed 환경에서는 dll 파일 안의 unmanaged 코드를 호출할 수 있다.&lt;/p&gt;
+
+    &lt;p&gt;Managed 환경에서는 COM component를 호출할 수 있다.&lt;/p&gt;
+
+    &lt;p&gt;Unmanaged 환경에서도 managed type을 사용할 수 있다.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;</content><author><name>Alice</name></author><summary type="html">Compiling Source Code into Managed Module</summary></entry><entry><title type="html">SynchronizationContext in C#</title><link href="https://hyeyoung0112.github.io//csharp/SynchronizationContext/" rel="alternate" type="text/html" title="SynchronizationContext in C#" /><published>2020-06-30T00:00:00+00:00</published><updated>2020-06-30T00:00:00+00:00</updated><id>https://hyeyoung0112.github.io//csharp/SynchronizationContext</id><content type="html" xml:base="https://hyeyoung0112.github.io//csharp/SynchronizationContext/">&lt;blockquote&gt;
+  &lt;p&gt;원본 출처: &lt;a href=&quot;https://docs.microsoft.com/en-us/archive/msdn-magazine/2011/february/msdn-magazine-parallel-computing-it-s-all-about-the-synchronizationcontext&quot;&gt;Parallel Computing - It’s All About the SynchronizationContext&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;C#을 쓰면서 처음 본 SynchronizationContext에 대해 찾아보다가 MSDN 글이 한글 버젼이 없길래… 9년 전 글이지만 번역 반 가볍게 정리해놓는 마음 반으로 쓰는 글.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;SynchronizationContext는 멀티 스레딩을 조금 더 간편하게 쓸 수 있도록 .NET 프레임워크에서 제공하는 도구이다. ASP.NET, Windows Forms, Windows Presentation Foundation (WPF), Silverlight 등등 모든 .NET 프로그램에서 사용할 수 있는 유용한 도구이다.&lt;/p&gt;
+
+&lt;h2 id=&quot;synchronizationcontext가-필요한-이유&quot;&gt;SynchronizationContext가 필요한 이유&lt;/h2&gt;
+
+&lt;p&gt;멀티스레딩 프로그램은 .NET 프레임워크 전부터 존재했었다. 보통 멀티스레딩 프로그램은 다른 스레드로 현재 스레드가 처리한 일을 넘기도록 구현할 필요가 있다. 기존 Windows 프로그램은 메시지 루프를 중심으로 돌아갔기 때문에 많은 프로그래들은 작업을 전달하기 위해 빌트인 큐를 사용해야 했다. Windows 메시지 큐를 쓰고 싶은 멀티스레딩 프로그램은 각자의 Windows 메시지를 커스텀하고 이를 처리하는 컨벤션을 만들어야 했다.&lt;/p&gt;
+
+&lt;p&gt;.NET 프레임워크가 처음으로 공개되면서, 이 패턴은 표준화되었다. 당시 .NET이 지원하는 유일한 GUI 어플리케이션은 Windows Forms이었다. 그러나 프레임워크 설계자들은 다른 모델을 대비해 보다 제네릭한 방법인 ISynchronizeInvoke라는 것을 만들었다.&lt;/p&gt;
+
+&lt;p&gt;ISynchronizeInvoke의 기본적인 아이디어는 source 스레드가 target 스레드에게 델리게이트를 큐잉시키고, 선택적으로 해당 델리게이트가 완료될 때까지 기다히는 것이다. 또한 현재 코드가 이미 target 스레드에서 실행되고 있는지를 확인할 수 있는 방법도 제공해 불필요하게 델리게이트가 큐잉되는 것 또한 막을 수 있었다. Windows Forms가 ISynchronizeInvoke의 구현을 제공했고, 비동기 컴포넌트를 설계하는 패턴이 만들어졌다. 모두가 행복:)&lt;/p&gt;
+
+&lt;p&gt;.NET 프레임워크 2.0에는 많은 변화가 있었다. ASP.NET 아키텍쳐에 비동기 페이지를 지원하기 시작한 것도 이 때이다. .NET 프레임워크 2.0전에는, 모든 ASP.NET의 요청은 각 요청이 완료될 때까지 스레드 하나가 필요했다. 이는 굉장히 비효율적이었는데, 웹 페이지 생성은 대부분 DB 쿼리와 웹 서비스 호출이 큰 부분이었기 떄문에 해당 요청을 처리하는 스레드는 각각의 오퍼레이션이 완료될 때까지 기다려야 했다. 비동기 페이지가 생긴 후로, 요청을 관리하는 스레드는 연산을 시작해놓고 다시 ASP.NET의 스레드 풀로 돌아가 쓰일 수 있게 되었다. 연산이 끝나면, 스레드 풀의 다른 스레드가 해당 요청을 완료 처리할 수 있었다.&lt;/p&gt;
+
+&lt;p&gt;그러나, ISynchronizeInvoke는 ASP.NET의 비동기 페이지 아키텍쳐에 적합하지 않았다. ASP.NET의 비동기 페이지는 하나의 스레드와 연관된 것이 아니었기 때문에 ISynchronizeInvoke 패턴으로 만들어진 비동기 컴포넌트들은 제대로 동작하지 않았다. 원래 스레드에 작업을 큐잉하는 방법 대신, 비동기 페이지는 페이지 요청이 완료되는지를 결정하기 위해 필요한 연산의 개수만 유지하기만 하면 됐다. 이 필요성에서 새롭게 설계된 SynchronizationContext가 ISynchronizeInvoke를 대신하게 되었다.&lt;/p&gt;
+
+&lt;h2 id=&quot;synchronizationcontext의-개념&quot;&gt;SynchronizationContext의 개념&lt;/h2&gt;
+
+&lt;p&gt;ISynchronizeInvoke는 두 가지 필요를 만족했다. 하나는 동기화가 필요한지 결정하는 것이었고, 다른 하나는 한 스레드에서 다른 스레드로 작업을 큐잉하는 것이었다. SynchronizationContext는 ISynchronizeInvoke를 대체하기 위해 만들어졌지만, 설계 후 기존 ISynchronizeInvoke를 정확히 대체하지는 않게 되었다.&lt;/p&gt;
+
+&lt;p&gt;SynchronizationContext는 작업을 context에 큐잉할 수 있는 방법을 제공해준다. 여기서 유의할 점은 작업을 특정 스레드가 아니라 context에 큐잉한다는 것이다. 아 차이는 SynchronizationContext 구현이 대부분 하나의 특정 스레드를 기준으로 하지 않는다는 점에서 매우 중요하다. 또한 SynchronizationContext는 동기화가 필요한지를 결정하는 메커니즘을 포함하지 않는데, 이를 결정하는 것이 언제나 가능한 것은 아니었기 때문이다.&lt;/p&gt;
+
+&lt;p&gt;SynchronizationContext의 또 다른 특징은 각 스레드가 “current” context를 갖는다는 것이다. 각 스레드의 context는 꼭 유니크하지는 앟으며, 다른 스레드와 context 인스턴스를 공유할 수 있다. 또한 스레드가 현재 자신의 context를 바꾸는 것 또한 (드물게 쓰이지만) 가능하다.&lt;/p&gt;
+
+&lt;p&gt;SynchronizationContext의 세 번째 특징은 현재 진행되는 비동기 연산의 개수를 가지고 있다는 것이다. 이는 ASP.NET의 비동기 페이지나 이런 종류의 개수에 관한 정보가 필요한 다른 호스트를 사용할 수 있게 해준다. 대부분의 경우에서, 현재 SynchronizationContext가 캡쳐될 때마다 count가 늘어나고, 캡쳐된 SynchronizationContext로 context에 완료를 노티할 때마다 count가 줄어든다.&lt;/p&gt;
+
+&lt;p&gt;SynchronizationContext에는 다른 특징들도 많지만, 이는 대부분의 프로그래머에게 중요하지 않은 것들이다. 가장 중요한 특징들을 Figure 1에 요약해 보았다.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Figure 1&lt;/strong&gt; Aspects of the SynchronizationContext API&lt;/p&gt;
+
+&lt;div class=&quot;language-xml highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// The important aspects of the SynchronizationContext APIclass SynchronizationContext 
+{
+	// Dispatch work to the context.
+	void Post(..); // (asynchronously)
+	void Send(..); // (synchronously)
+	// Keep track of the number of asynchronous operations.
+ 	void OperationStarted();
+	void OperationCompleted();
+	// Each thread has a current context.
+	// If &quot;Current&quot; is null, then the thread's current context is
+	// &quot;new SynchronizationContext()&quot;, by convention.
+	static SynchronizationContext Current { get; }
+	static void SetSynchronizationContext(SynchronizationContext);
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;synchronizationcontext의-구현들&quot;&gt;SynchronizationContext의 구현들&lt;/h2&gt;
+
+&lt;p&gt;SynchronizationContext의 실제 “context”는 정확히 정의되지 않는다. 각각의 프레임워크와 호스트는 각자의 context를 정의할 수 있다. 이런 다양한 구현과 한계를 이해하면 SynchronizationContext의 개념이 무엇을 보장하고 보장하지 않는지 알 수 있다. 간략하게 구현 몇 가지를 소개하겠다.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;WindowsFormsSynchronizationContext&lt;/strong&gt; (&lt;em&gt;System.Windows.Forms.dll: System.Windows.Forms&lt;/em&gt;)&lt;/p&gt;
+
+&lt;p&gt;Windows Forms 앱에서 사용하는 SynchronizationContext. UI 제어를 생성하는 스레드에서 사용된다. 여기서는 UI 제어를 위해 ISynchronizeInvoke 메서드를 사용하고, ISynchronizeInvoke 메서드는 내재된 Win32 메시지 루프에 델리게이트를 전달한다. WindowsFormsSynchronizationContext의 context는 하나의 UI 스레드이다. WindowsFormsSynchronizationContext에 큐잉된 델리게이트는 한 번에 하나씩만 특정 UI 스레드에 의해 큐잉된 순서대로 수행된다. 현재의 구현은 하나의 UI 스레드마다 하나의 WindowsFormsSynchronizationContext를 생성한다.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;DispatcherSynchronizationContext&lt;/strong&gt; (&lt;em&gt;WindowsBase.dll: System.Windows.Threading&lt;/em&gt;)&lt;/p&gt;
+
+&lt;p&gt;WPF와 Silverlight 앱에서는 DispatcherSynchronizationContext를 사용한다. DispatcherSynchronizationContext는 UI 스레드의 Dispatcher에게 “보통” 수준의 우선순위로 델리게이트들을 큐잉한다. 스레드가 Dispatcher를 호출함으로써 Dispatcher loop을 시작할 때 SynchronizationContext가 설치된다. DispatcherSynchronizationContext에서의 context도 위와 마찬가지로 하나의 UI 스레드이다. 따라서 델리게이트가 수행되는 방식도 한 번에 하나씩 큐잉된 순서대로 특정 UI 스레드에 의해서 수행되는 방식으로 위와 같다. 현재 구현은 각각의 top-level window 하나당 DispatcherSynchronizationContext를 하나씩 생성한다. (같은 Dispatcher를 사용할지라도!)&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Default (ThreadPool) SynchronizationContext&lt;/strong&gt; (&lt;em&gt;mscorlib.dll: System.Threading&lt;/em&gt;)&lt;/p&gt;
+
+&lt;p&gt;디폴트로 제공되는 SynchronizationContext는 default-constructed SynchronizationContext object이다. 스레드의 현재 SynchronizationContext가 null이라면, 이는 스레드가 디폴트 SynchronizationContext을 가지고 있음을 암시한다.&lt;/p&gt;
+
+&lt;p&gt;디폴트 SynchronizationContext는 자신의 비동기 델리게이트들을 스레드 풀에 큐잉하지만 동기적인 델리게이트는 호출 스레드에서 바로 수행한다. 따라서, 이 context는 Send를 부르는 스레드와 스레드 풀의 스레드들을 모두 커버한다. context는 Send를 호출하는 스레드를 “빌리고”, 델리게이트가 완료될 때까지 context로 가져온다. 이 관점에서 보면 기본 context는 프로세스의 아무 스레드나 다 포함할 수 있다.&lt;/p&gt;
+
+&lt;p&gt;스레드 풀의 스레드에는 코드가 ASP.NET에 의해 호스트되지 않는 한 디폴트 SynchronizationContext가 적용된다. 또한 Thread 클래스의 인스턴스들인 명시적인 자식 스레드에도 암시적으로 디폴트 SynchronizationContext가 적용된다. 따라서, UI 어플리케이션은 주로 두 종류의 synchronization context를 갖는다. UI SynchronizationContext는 UI 스레드에 적용되고, 디폴트 SynchronizationContext는 스레드 풀 스레드에 적용된다.&lt;/p&gt;
+
+&lt;p&gt;많은 이벤트 기준의 비동기 컴포넌트들은 디폴트 SynchronizationContext로는 예상대로 작동하지 않는다. 제일 널리 알려진 예시는 BackgroundWorker 하나가 다른 BackgroundWorker를 시작시키는 UI 어플리케이션에서의 오류이다. 각각의 BackgroundWorker는 RunWorkerAsync를 호출하는 스레드의 SynchronizationContext를 가져와 사용한다. 그렇게 가져온 context에서 RunWorkerCompleted 이벤트를 실행한다. 하나의 BackgroundWorker가 있을 경우, &lt;strong&gt;Figure 2&lt;/strong&gt;처럼 RunWorkerAsync는 UI의 context에서 RunWorkerCompleted가 실행되게 한다.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://docs.microsoft.com/en-us/archive/msdn-magazine/2011/february/images/gg598924.cleary_figure2_hires(en-us%2cmsdn.10).jpg&quot; alt=&quot;image: A Single BackgroundWorker in a UI Context&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Figure 2&lt;/strong&gt; A Single BackgroundWorker in a UI Context&lt;/p&gt;
+
+&lt;p&gt;그러나 만일 BackgroundWorker가 DoWork 핸들러에서 또 다른 BackgroundWorker를 부른다면, nested BackgroundWorker는 UI SynchronizationContext가 아닌 디폴트 SynchronizationContext를 가져오게 된다. 따라서 이 BackgroundWorker는 &lt;strong&gt;Figure 3&lt;/strong&gt; 처럼 스레드 풀에서 RunWorkerCompleted를 실행하게 할 것이다.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://docs.microsoft.com/en-us/archive/msdn-magazine/2011/february/images/gg598924.cleary_figure3_hires(en-us%2cmsdn.10).jpg&quot; alt=&quot;image: Nested BackgroundWorkers in a UI Context&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Figure 3&lt;/strong&gt; Nested BackgroundWorkers in a UI Context&lt;/p&gt;
+
+&lt;p&gt;기본적으로 콘솔 어플리케이션과 Windows 서비스의 모든 스레드는 디폴트 SynchronizationContext 만을 가진다. 이 때문에 몇 개의 event 기준의 비동기 컴포넌트가 제대로 작동하지 않는다. 이를 해결하기 위한 한 방법은 하나의 명시적인 자식 스레드를 생성하고, 해당 스레드에 SynchronizationContext를 설치해 이 context가 문제가 되는 컴포넌트들에게 context를 제공하게 하는 것이다. 이에 관한 자세한 내용은 이 기사 대신 Nito.Async library (&lt;a href=&quot;http://nitoasync.codeplex.com/&quot;&gt;nitoasync.codeplex.com&lt;/a&gt;) 를 참고해보자! (2011년 기사인데.. 지금도 살아있으려나..?)&lt;/p&gt;
+
+&lt;h2 id=&quot;synchronizationcontext의-구현에-대해-참고할-것&quot;&gt;SynchronizationContext의 구현에 대해 참고할 것&lt;/h2&gt;
+
+&lt;p&gt;SynchronizationContext는 다양한 프레임워크에서 작동할 수 있는 컴포넌트를 작성할 방법을 제공한다. BackgroundWorker나 WebClient가 Windows Forms, WPF, Silverlight, console, ASP.NET 어플리케이션 모두에서 작동될 수 있는 컴포넌트로 좋은 예시이다. 그러나 이처럼 재사용할 수 있는 컴포넌트를 작성하기 위해서는 기억해두어야 할 것이 있다.&lt;/p&gt;
+
+&lt;p&gt;일반적으로, SynchronizationContext의 구현은 동일성을 비교할 수 없다. 이는 ISynchronizeInvoke.InvokeRequired를 대체할 수 있는 것이 없다는 뜻이다. 그러나 이는 치명적인 단점은 아니다. 여러 context를 다루려고 시도하는 것보다는 이미 알고 있는 context 안에서만 실행되는 코드가 훨씬 더 깔끔하고 검증하기 쉽다.&lt;/p&gt;
+
+&lt;p&gt;또한 SynchronizationContext의 구현이 델리게이트 수행 순서나 델리게이트의 동기화를 무조건 보장하지는 않는다. UI 기준의 SynchronizationContext 구현은 이를 만족하지만, ASP.NET의 SynchronizationContext는 동기화만 제공한다. 디폴트 SynchronizationContext는 수행 순서와 동기화 모두 보장하지 않는다.&lt;/p&gt;
+
+&lt;p&gt;또한 SynchronizationContext과 스레드 간의 1대 1 관계도 성립하지 않는다. WindowsFormsSynchronizationContext는 SynchronizationContext.CreateCopy를 호출하지 않는 한 1:1 매핑이 있지만 다른 구현에서는 모두 성립하지 않는다. 따라서 어떤 context 인스턴스도 특정 스레드에서 수행될 것이라고 가정하지 않는 것이 안전하다.&lt;/p&gt;
+
+&lt;p&gt;마지막으로, SynchronizationContext.Post 메서드는 항상 비동기이지 않다. 대부분의 구현이 Post를 비동기로 구현하기는 하지만, AspNetSynchronizationContext가 그러지 않는 대표적인 예외이다. 이는 예상치 못한 re-entrancy 이슈를 일으킬 수 있다.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Figure 4&lt;/strong&gt;에서 SynchronizationContext의 다양한 구현에 대한 요약을 확인할 수 있다.&lt;/p&gt;
+
+&lt;p&gt;Figure 4 &lt;strong&gt;Summary of SynchronizationContext Implementations&lt;/strong&gt;&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt; &lt;/th&gt;
+      &lt;th&gt;&lt;strong&gt;Specific Thread Used to Execute Delegates&lt;/strong&gt;&lt;/th&gt;
+      &lt;th&gt;&lt;strong&gt;Exclusive (Delegates Execute One at a Time)&lt;/strong&gt;&lt;/th&gt;
+      &lt;th&gt;&lt;strong&gt;Ordered (Delegates Execute in Queue Order)&lt;/strong&gt;&lt;/th&gt;
+      &lt;th&gt;&lt;strong&gt;Send May Invoke Delegate Directly&lt;/strong&gt;&lt;/th&gt;
+      &lt;th&gt;&lt;strong&gt;Post May Invoke Delegate Directly&lt;/strong&gt;&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;&lt;strong&gt;Windows Forms&lt;/strong&gt;&lt;/td&gt;
+      &lt;td&gt;Yes&lt;/td&gt;
+      &lt;td&gt;Yes&lt;/td&gt;
+      &lt;td&gt;Yes&lt;/td&gt;
+      &lt;td&gt;If called from UI thread&lt;/td&gt;
+      &lt;td&gt;Never&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;&lt;strong&gt;WPF/Silverlight&lt;/strong&gt;&lt;/td&gt;
+      &lt;td&gt;Yes&lt;/td&gt;
+      &lt;td&gt;Yes&lt;/td&gt;
+      &lt;td&gt;Yes&lt;/td&gt;
+      &lt;td&gt;If called from UI thread&lt;/td&gt;
+      &lt;td&gt;Never&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;&lt;strong&gt;Default&lt;/strong&gt;&lt;/td&gt;
+      &lt;td&gt;No&lt;/td&gt;
+      &lt;td&gt;No&lt;/td&gt;
+      &lt;td&gt;No&lt;/td&gt;
+      &lt;td&gt;Always&lt;/td&gt;
+      &lt;td&gt;Never&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;&lt;strong&gt;ASP.NET&lt;/strong&gt;&lt;/td&gt;
+      &lt;td&gt;No&lt;/td&gt;
+      &lt;td&gt;Yes&lt;/td&gt;
+      &lt;td&gt;No&lt;/td&gt;
+      &lt;td&gt;Always&lt;/td&gt;
+      &lt;td&gt;Always&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h2 id=&quot;asyncoperationmanager-and-asyncoperation&quot;&gt;AsyncOperationManager and AsyncOperation&lt;/h2&gt;
+
+&lt;p&gt;.NET 프레임워크의 AsyncOperationManager와 AsyncOperation 클래스는 SynchronizationContext의 추상화를 감싸는 가벼운 wrapper이다. AsyncOperationManager는 처음으로 AsyncOperation을 생성할 때 현재의 SynchronizationContext를 가져온다. 만일 현재 SynchronizationContext가 null이라면 이를 디폴트 SynchronizationContext로 대체한다. AsyncOperation은 가져온 SynchronizationContext에 비동기적으로 델리게이트를 post한다.&lt;/p&gt;
+
+&lt;p&gt;대부분의 event-based 비동기 컴포넌트의 구현에서 AsyncOperationManger와 AsyncOperation을 사용한다. AsyncOperationManager와 AsyncOperation은 완료 시점이 정의된 비동기 연산에서 편리하게 쓰인다. 완료 시점이 정의됐다는 건 다른 말로는 비동기 연산이 한 시점에서 시작해 다른 시점에서 이벤트와 함께 끝난다는 것이다. 다른 비동기 알림은 완료 시점이 정의되지 않을 수도 있다. subscription과 같이 한 시점에서 시작해 완료되지 않고 계속 진행될 수 있다는 것이다. 이런 연산의 경우에는 SynchronizationContext를 바로 가져와서 직접 사용하면 된다.&lt;/p&gt;
+
+&lt;p&gt;새로운 컴포넌트는 더 이상 이벤트 기반의 비동기 패턴을 사용해서는 안된다. 비쥬얼 스튜디오의 비동기 Community Technology Preview (CTP) 에 task 기반의 비동기 패턴에 대한 문서가 있는데, 이는 SynchronizationContext를 통해 이벤트를 생성하는 대신 Task와 Task&amp;lt;TResult&amp;gt; 객체를 사용하는 방법을 다룬다. Task 기반 API가 .NET에서 비동기 프로그래밍의 미래다! :angel:&lt;/p&gt;
+
+&lt;h2 id=&quot;examples-of-library-support-for-synchronizationcontext&quot;&gt;Examples of Library Support for SynchronizationContext&lt;/h2&gt;
+
+&lt;p&gt;BackgroundWorker나 WebClient처럼 간단한 컴포넌트들은 SynchronizationContext를 밖으로 노출하지 않고 암시적으로만 사용할 수 있다. 그러다 다른 많은 라이브러리들에서는 SynchronizationContext의 사용이 더 분명히 드러난다. SynchronizationContext를 사용하는 API를 제공함으로써, 라이브러리는 프레임워크에 대해 독립적으로 변할 뿐만 아니라 숙련된 엔드 사용자에게 확장할 수 있는 포인트를 제공한다.&lt;/p&gt;
+
+&lt;p&gt;앞으로 논의할 라이브러리 말고도, 현재 SynchronizationContext는 ExecutionContext의 일부이다. 스레드의 ExecutionContext를 사용하는 시스템은 SynchronizationContext도 사용한다. ExecutionContext가 restore되면 SynchronizationContext 또한 restore된다.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Task Parallel Library (TPL): TaskScheduler.FromCurrentSynchronizationContext and CancellationToken.Register&lt;/strong&gt; TPL에서는 Task 객체를 작업의 단위로 사용하고 TaskScheduler를 이용해 작업을 진행한다. 디폴트 TaskScheduler는 디폴트 SynchronizationContext처럼 스레드 풀에 task를 큐잉한다. TPL queue가 제공하는 또 다른 TaskScheduler는 SynchronizationContext에 task를 큐잉한다. UI 업데이트는 &lt;strong&gt;Figure 5&lt;/strong&gt; 에서처럼 nested task에서 수행될 수 있다.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Figure 5&lt;/strong&gt; Progress Reporting with UI Updates&lt;/p&gt;
+
+&lt;div class=&quot;language-xml highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;private void button1_Click(object sender, EventArgs e)
+{
+  // This TaskScheduler captures SynchronizationContext.Current.
+  TaskScheduler taskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
+  // Start a new task (this uses the default TaskScheduler, 
+  // so it will run on a ThreadPool thread).
+  Task.Factory.StartNew(() =&amp;gt;
+  {
+    // We are running on a ThreadPool thread here.
+	// Do some work.
+	// Report progress to the UI.
+    Task reportProgressTask = Task.Factory.StartNew(() =&amp;gt;
+      {
+        // We are running on the UI thread here.
+        ; // Update the UI with our progress.
+      },
+      CancellationToken.None,
+      TaskCreationOptions.None,
+      taskScheduler);
+    reportProgressTask.Wait();
+	
+	// Do more work.
+  });
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;CancellationToken 클래스는 .NET 프레임워크 4.0에서 여러 종류의 취소를 할 때 쓰인다. 기존의 취소 방식과 통합하기 위해서, 이 클래스는 취소가 요청되었을 때 델리게이트를 실행할 수 있도록 한다.델리게이트가 등록되면, SynchronizationContext가 전달될 수 있다. 취소가 요청되면, CancellationToken은 직접 델리게이트를 실행하는 대신 SynchronizationContext에 델리게이트를 큐잉한다.&lt;/p&gt;
+
+&lt;p&gt;​&lt;/p&gt;
+
+&lt;h2 id=&quot;limitations-and-guarantees&quot;&gt;Limitations and Guarantees&lt;/h2&gt;
+
+&lt;p&gt;이 문단 문장을 요약하면 뭐든 알아두면 좋다 ^-ㅠ 크로스 프레임워크 컴포넌트나 라이브러리에서 사용하는 SynchronizationContext가 뭘 할 수 있고 뭘 하지 못하는지 이해하면 관련 코드를 써먹기 좋으니까! 그리고 뭐든… 모르는 상태에서 그래서 이게 도대체 뭔데?! :angry: 하는 것보다 뭔지 대강 알아놓으면 마주쳤을 때 아 나 얘 알아! 하고 이해하는 과정이 좀 더 즐거우니까.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;strong&gt;Stephen Cleary&lt;/strong&gt; &lt;em&gt;has had an interest in multithreading ever since he first heard of the concept. He’s completed many business-critical multitasking systems for major clients including Syracuse News, R. R. Donnelley and BlueScope Steel. He regularly speaks at .NET user groups, BarCamps and Day of .NET events near his home in Northern Michigan, usually on a multithreading topic. He maintains a programming blog at &lt;a href=&quot;http://nitoprograms.com/&quot;&gt;nitoprograms.com&lt;/a&gt;.&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;Thanks to the following technical expert for reviewing this article: &lt;strong&gt;Eric Eilebrecht&lt;/strong&gt;&lt;/em&gt;&lt;/p&gt;</content><author><name>Alice</name></author><category term="CSharp" /><category term="AsyncProgramming" /><category term="SynchronizationContext" /><summary type="html">원본 출처: Parallel Computing - It’s All About the SynchronizationContext</summary></entry><entry><title type="html">조영호 저 Object를 읽고</title><link href="https://hyeyoung0112.github.io//books/Object/" rel="alternate" type="text/html" title="조영호 저 Object를 읽고" /><published>2020-06-28T00:00:00+00:00</published><updated>2020-06-28T00:00:00+00:00</updated><id>https://hyeyoung0112.github.io//books/Object</id><content type="html" xml:base="https://hyeyoung0112.github.io//books/Object/">&lt;blockquote&gt;
+  &lt;p&gt;제목: 오브젝트&lt;/p&gt;
+
+  &lt;p&gt;저자: 조영호&lt;/p&gt;
+
+  &lt;p&gt;출판사: 위키북스&lt;/p&gt;
+
+  &lt;p&gt;출간일: 2019.06.17&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;hr /&gt;
+
+&lt;h3 id=&quot;목차&quot;&gt;목차&lt;/h3&gt;
+
+&lt;p&gt;&lt;strong&gt;들어가며: 프로그래밍 패러다임&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;패러다임의 시대&lt;/li&gt;
+  &lt;li&gt;프로그래밍 패러다임&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;strong&gt;1장: 객체, 설계&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;티켓 판매 애플리케이션 구현하기&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;무엇이 문제인가&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;설계 개선하기&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;객체지향 설계&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;strong&gt;2장: 객체지향 프로그래밍&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;영화 예매 시스템&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;객체지향 프로그래밍을 향해&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;할인 요금 구하기&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;상속과 다형성&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;추상화와 유연성&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;strong&gt;3장: 역할, 책임, 협력&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;협력&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;책임&lt;/li&gt;
+  &lt;li&gt;역할&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;strong&gt;4장: 설계 품질과 트레이드오프&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;데이터 중심의 영화 예매 시스템&lt;/li&gt;
+  &lt;li&gt;설계 트레이드오프&lt;/li&gt;
+  &lt;li&gt;데이터 중심의 영화 예매 시스템의 문제점&lt;/li&gt;
+  &lt;li&gt;자율적인 객체를 향해&lt;/li&gt;
+  &lt;li&gt;하지만 여전히 부족하다&lt;/li&gt;
+  &lt;li&gt;데이터 중심 설계의 문제점&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;strong&gt;5장: 책임 할당하기&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;책임 주도 설계를 향해&lt;/li&gt;
+  &lt;li&gt;책임 할당을 위한 GRASP 패턴&lt;/li&gt;
+  &lt;li&gt;구현을 통한 검증&lt;/li&gt;
+  &lt;li&gt;책임 주도 설계의 대안&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;strong&gt;6장: 메시지와 인터페이스&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;협력과 메시지&lt;/li&gt;
+  &lt;li&gt;인터페이스와 설계 품질&lt;/li&gt;
+  &lt;li&gt;원칙의 함정&lt;/li&gt;
+  &lt;li&gt;명령-쿼리 분리 원칙&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;strong&gt;7장:  객체 분해&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;프로시저 추상화와 데이터 추상화&lt;/li&gt;
+  &lt;li&gt;프로시저 추상화와 기능 분해&lt;/li&gt;
+  &lt;li&gt;모듈&lt;/li&gt;
+  &lt;li&gt;데이터 추상화와 추상 데이터 타입&lt;/li&gt;
+  &lt;li&gt;클래스&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;strong&gt;8장: 의존성 관리하기&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;의존성 이해하기&lt;/li&gt;
+  &lt;li&gt;유연한 설계&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;strong&gt;9장: 유연한 설계&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;개방-폐쇄 원칙&lt;/li&gt;
+  &lt;li&gt;생성 사용 분리&lt;/li&gt;
+  &lt;li&gt;의존성 주입&lt;/li&gt;
+  &lt;li&gt;의존성 역전 원칙&lt;/li&gt;
+  &lt;li&gt;유연성에 대한 조언&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;strong&gt;10장: 상속과 코드 재사용&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;상속과 중복 코드&lt;/li&gt;
+  &lt;li&gt;취약한 기반 클래스 문제&lt;/li&gt;
+  &lt;li&gt;Phone 다시 살펴보기&lt;/li&gt;
+  &lt;li&gt;차이에 의한 프로그래밍&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;strong&gt;11장: 합성과 유연한 설계&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;상속을 합성으로 변경하기&lt;/li&gt;
+  &lt;li&gt;상속으로 인한 조합의 폭발적인 증가&lt;/li&gt;
+  &lt;li&gt;합성 관계로 변경하기&lt;/li&gt;
+  &lt;li&gt;믹스인&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;strong&gt;12장: 다형성&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;다형성&lt;/li&gt;
+  &lt;li&gt;상속의 양면성&lt;/li&gt;
+  &lt;li&gt;업캐스팅과 동적 바인딩&lt;/li&gt;
+  &lt;li&gt;동적 메서드 탐색과 다형성&lt;/li&gt;
+  &lt;li&gt;상속 대 위임&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;strong&gt;13장: 서브클래싱과 서브타이핑&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;타입&lt;/li&gt;
+  &lt;li&gt;타입 계층&lt;/li&gt;
+  &lt;li&gt;서브클래싱과 서브타이핑&lt;/li&gt;
+  &lt;li&gt;리스코프 치환 원칙&lt;/li&gt;
+  &lt;li&gt;계약에 의한 설계와 서브타이핑&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;strong&gt;14장: 일관성 있는 협력&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;핸드폰 과금 시스템 변경하기&lt;/li&gt;
+  &lt;li&gt;설계에 일관성 부여하기&lt;/li&gt;
+  &lt;li&gt;일관성 있는 기본 정책 구현하기&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;strong&gt;15장: 디자인 패턴과 프레임워크&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;디자인 패턴과 설계 재사용&lt;/li&gt;
+  &lt;li&gt;프레임워크와 코드 재사용&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;strong&gt;마치며: 나아가기&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;부록A: 계약에 의한 설계&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;협력과 계약&lt;/li&gt;
+  &lt;li&gt;계약에 의한 설계&lt;/li&gt;
+  &lt;li&gt;계약에 의한 설계와 서브타이핑&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;strong&gt;부록B: 타입 계층의 구현&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;부록C: 동적인 협력, 정적인 코드&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;동적 모델과 정적 모델&lt;/li&gt;
+  &lt;li&gt;도메인 모델과 구현&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;strong&gt;부록D: 참고문헌&lt;/strong&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;객체 지향 프로그래밍에 대해서 내 이해가 그거 그냥 설계할 때 객체 넣는다는 거 아니야? 수준이었다는 걸 깨닫게 해 준 책이었다. 나중에 다시 볼 때를 위해 이 책을 읽으면서 깨달은 것들을 정리해보고자 한다.&lt;/p&gt;
+
+&lt;p&gt;객체 지향 프로그래밍은 변경에 유연하게 대처할 수 있는 코드를 작성하기 위해 책임 중심으로 객체를 만들고, 각 객체가 각자의 책임을 가지고 프로그램 실행을 위해 협력하며 자신의 역할을 하도록 설계하고 코드를 작성하는 것이다.&lt;/p&gt;
+
+&lt;p&gt;이 정의를 나누어서 보자면 우선 목적은 변경에 유연하게 대처할 수 있는 코드를 작성하는 것이다. 프로그램을 만들 때 처음에 완벽하고 변경이 없을 요구사항이 주어진다면 이런 고민을 하지 않아도 되겠지만 현실에서 그런 일은 없다. 요구사항은 끊임없이 변하고 추가되고 사라지므로 이에 잘 대응할 수 있어야 일을 두번 세번 열번 반복하는 일이 없게 된다. 또한 유연하게 대처하지 못하는 코드의 경우 요구사항의 변화에 따라 기존 코드도 변화해야 하고, 이 경우 찾기 힘든 버그가 생기는 경우가 잦다.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;..\assets\images\BestCodeIsWorkingcode.gif&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;그렇다면 이를 위해 해야 할 일은 책임 중심으로 객체를 만들고, 각 객체가 각자의 책임을 가지고 프로그램 실행을 위해 협력하며 자신의 역할을 하도록 설계하고 코드를 작성하는 것이라고 한다.&lt;/p&gt;
+
+&lt;p&gt;왜 책임 중심으로 객체를 만들어야 하는 걸까? 책임이 중심이 되지 않으면 요구사항에 쉽게 대응하기 어렵기 때문이다. 요구사항은 결국 어떤 책임의 내용을 바꾸거나 추가하는 것이므로, 코드를 책임이 아니라 데이터 중심으로 짠다면 새로운 요구사항이 추가되었을 때 뒤엎어야 할 가능성이 높다. 이렇게 책임 위주로 설계하기 위해서는 각 객체의 역할, 책임, 협력에 대해 생각하며 설계해야 한다. 이 책에서는 그 방법으로 CRC 카드를 소개했는데, 각 객체마다 Candidate, Responsibility, Collaborator를 하나의 카드에 정리하는 것이다. Candidate은 객체가 될 수 있는 후보, Responsibility는 객체가 맡은 책임, 그리고 Collaborator는 객체와 협력하는 다른 객체이다. 이렇게 카드를 만들어 설계를 한다면 각 객체를 역할, 책임, 협력의 관점에서 설계할 수 있어 데이터 중심 설계에서 벗어나서 사고하는 데 도움이 된다.&lt;/p&gt;
+
+&lt;p&gt;이렇게 책임 중심으로 만들어진 객체는 프로그램을 실행하기 위해 서로 메시지를 주고받으며 협력하게 된다. 이 때 협력하는 각 객체들은 서로에 대해 너무 잘 알아서는 안된다. 이는 의존성 때문이다. 의존성을 제대로 관리하지 못할 경우, 요구사항 하나의 변경에 수많은 변경이 뒤따르게 만들 수 있다.&lt;/p&gt;
+
+&lt;p&gt;이제 캡슐화라는 개념이 등장할 차례이다. 기존에 내가 이해한 캡슐화는 접근 제한자 정도의 수준이었다. 외부 객체가 해당 객체의 정보를 마음대로 바꾸는 것을 막기 위해 제한을 걸어둔다는 정도? 하지만 캡슐화에서 정말 중요한 것은 변하지 않는 것만 노출하고, 변하는 것은 감추는 것이다. 인터페이스와 구현의 분리가 이를 가리킨다. 인터페이스는 다른 객체가 알고 있어야 하는 메시지이기 때문에 자주 바뀌는 내용을 메시지로 노출한다면 바뀔 때마다 그와 연관된 객체의 내용도 바꿔야 하고, 이는 변경에 유연하게 대처하는 코드와는 거리가 멀다. 그리고 많이 바꿀수록 버그는…ㅠㅠㅠ Shy code를 작성하라는 것도 같은 맥락에서 내부 구현에 대해 몰라도 인터페이스만 보고 사용할 수 있어야 하기 때문이다.&lt;/p&gt;
+
+&lt;p&gt;또 인상깊었던 것은 상속에 관한 내용이었다. 많은 사람들이 코드 재사용을 위해, DRY 원칙을 위해 상속을 사용해야 한다고 생각하지만 사실 상속은 그보다는 타입 계층 구현이 목적이라는 것이다. 단순히 코드 재사용을 목적으로 상속을 사용할 경우, A와 B가 같은 내용의 코드로 출발해서 점점 요구사항이 추가됨에 따라 달라질 때 이 변경을 잘 반영하기 어렵다. 따라서 상속은 Is-A 관계를 만족하고, 서브 타입이 슈퍼 타입과 같은 역할을 가질 때에만 사용하는 것이 바람직하다. 이 책에서의 예시는 펭귄과 새였다. 이 예시에서 펭귄은 새이지만, 새가 보편적으로 가지고 있는 행동인 Fly를 하지 못하는 객체이다. 이런 경우 새가 할 수 있는 행동을 펭귄은 하지 못하기에, 펭귄이 새를 상속하게 하는 것은 바람직하지 못하다.&lt;/p&gt;
+
+&lt;p&gt;근래 읽은 기술 관련 서적 중에서 제일 재미있고 흥미있게 읽은 것 같다! 읽으면서 새로 깨달은 부분도 많았고… 다음에 다시 읽어봐도 또 새로운 부분이 보일 것 같다. 지금까지 알고 있던 객체는 아무것도 아니었다는 걸 깨달았구… 뭔가 졸업하기 전이랑 지금이랑 실력이 크게 늘었다는 생각은 안 드는데 책 내용은 뭔가 훨씬 새롭게 와 닿았다. 왜지..?&lt;/p&gt;</content><author><name>Alice</name></author><summary type="html">제목: 오브젝트 저자: 조영호 출판사: 위키북스 출간일: 2019.06.17</summary></entry><entry><title type="html">LeetCode Subarray Sum Equals K</title><link href="https://hyeyoung0112.github.io//leetcode/LeetCode_SubarraySumEqualsK/" rel="alternate" type="text/html" title="LeetCode Subarray Sum Equals K" /><published>2020-04-22T00:00:00+00:00</published><updated>2020-04-22T14:47:00+00:00</updated><id>https://hyeyoung0112.github.io//leetcode/LeetCode_SubarraySumEqualsK</id><content type="html" xml:base="https://hyeyoung0112.github.io//leetcode/LeetCode_SubarraySumEqualsK/">&lt;h2 id=&quot;problem&quot;&gt;Problem&lt;/h2&gt;
+
+&lt;p&gt;Given an array of integers and an integer &lt;strong&gt;k&lt;/strong&gt;, you need to find the total number of continuous subarrays whose sum equals to &lt;strong&gt;k&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Example 1:&lt;/strong&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Input:nums = [1,1,1], k = 2
+Output: 2
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;The length of the array is in range [1, 20,000].&lt;/li&gt;
+  &lt;li&gt;The range of numbers in the array is [-1000, 1000] and the range of the integer &lt;strong&gt;k&lt;/strong&gt; is [-1e7, 1e7].&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;solution&quot;&gt;Solution&lt;/h2&gt;
+
+&lt;div class=&quot;language-c# highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Solution&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;SubarraySum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nums&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;kt&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tot_count&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;kt&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sum&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;Dictionary&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;map&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Dictionary&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;();&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Add&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+        
+        &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;nums&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Length&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;++)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;sum&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nums&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+            &lt;span class=&quot;kt&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;count&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;TryGetValue&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;out&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;count&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+                &lt;span class=&quot;n&quot;&gt;tot_count&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;count&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;TryGetValue&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;out&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;count&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+                &lt;span class=&quot;n&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;count&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+                &lt;span class=&quot;n&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Add&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+            &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+        
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tot_count&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;</content><author><name>Alice</name></author><category term="leetcode" /><category term="csharp" /><summary type="html">Problem</summary></entry><entry><title type="html">LeetCode Leftmost Column with at least One</title><link href="https://hyeyoung0112.github.io//leetcode/LeetCode_LeftmostColumnWithAtLeastOne/" rel="alternate" type="text/html" title="LeetCode Leftmost Column with at least One" /><published>2020-04-21T00:00:00+00:00</published><updated>2020-04-21T14:06:00+00:00</updated><id>https://hyeyoung0112.github.io//leetcode/LeetCode_LeftmostColumnWithAtLeastOne</id><content type="html" xml:base="https://hyeyoung0112.github.io//leetcode/LeetCode_LeftmostColumnWithAtLeastOne/">&lt;h2 id=&quot;problem&quot;&gt;Problem&lt;/h2&gt;
+
+&lt;p&gt;&lt;em&gt;(This problem is an &lt;strong&gt;interactive problem&lt;/strong&gt;.)&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;A binary matrix means that all elements are &lt;code class=&quot;highlighter-rouge&quot;&gt;0&lt;/code&gt; or &lt;code class=&quot;highlighter-rouge&quot;&gt;1&lt;/code&gt;. For each &lt;strong&gt;individual&lt;/strong&gt; row of the matrix, this row is sorted in non-decreasing order.&lt;/p&gt;
+
+&lt;p&gt;Given a row-sorted binary matrix binaryMatrix, return leftmost column index(0-indexed) with at least a &lt;code class=&quot;highlighter-rouge&quot;&gt;1&lt;/code&gt; in it. If such index doesn’t exist, return &lt;code class=&quot;highlighter-rouge&quot;&gt;-1&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;You can’t access the Binary Matrix directly.&lt;/strong&gt; You may only access the matrix using a &lt;code class=&quot;highlighter-rouge&quot;&gt;BinaryMatrix&lt;/code&gt; interface:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;BinaryMatrix.get(x, y)&lt;/code&gt; returns the element of the matrix at index &lt;code class=&quot;highlighter-rouge&quot;&gt;(x, y)&lt;/code&gt; (0-indexed).&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;BinaryMatrix.dimensions()&lt;/code&gt; returns a list of 2 elements &lt;code class=&quot;highlighter-rouge&quot;&gt;[n, m]&lt;/code&gt;, which means the matrix is &lt;code class=&quot;highlighter-rouge&quot;&gt;n * m&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Submissions making more than &lt;code class=&quot;highlighter-rouge&quot;&gt;1000&lt;/code&gt; calls to &lt;code class=&quot;highlighter-rouge&quot;&gt;BinaryMatrix.get&lt;/code&gt; will be judged &lt;em&gt;Wrong Answer&lt;/em&gt;. Also, any solutions that attempt to circumvent the judge will result in disqualification.&lt;/p&gt;
+
+&lt;p&gt;For custom testing purposes you’re given the binary matrix &lt;code class=&quot;highlighter-rouge&quot;&gt;mat&lt;/code&gt; as input in the following four examples. You will not have access the binary matrix directly.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Example 1:&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;&lt;img src=&quot;https://assets.leetcode.com/uploads/2019/10/25/untitled-diagram-5.jpg&quot; alt=&quot;img&quot; /&gt;&lt;/strong&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Input: mat = [[0,0],[1,1]]
+Output: 0
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;Example 2:&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;&lt;img src=&quot;https://assets.leetcode.com/uploads/2019/10/25/untitled-diagram-4.jpg&quot; alt=&quot;img&quot; /&gt;&lt;/strong&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Input: mat = [[0,0],[0,1]]
+Output: 1
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;Example 3:&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;&lt;img src=&quot;https://assets.leetcode.com/uploads/2019/10/25/untitled-diagram-3.jpg&quot; alt=&quot;img&quot; /&gt;&lt;/strong&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Input: mat = [[0,0],[0,0]]
+Output: -1
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;Example 4:&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;&lt;img src=&quot;https://assets.leetcode.com/uploads/2019/10/25/untitled-diagram-6.jpg&quot; alt=&quot;img&quot; /&gt;&lt;/strong&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Input: mat = [[0,0,0,1],[0,0,1,1],[0,1,1,1]]
+Output: 1
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;Constraints:&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;1 &amp;lt;= mat.length, mat[i].length &amp;lt;= 100&lt;/code&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;mat[i][j]&lt;/code&gt; is either &lt;code class=&quot;highlighter-rouge&quot;&gt;0&lt;/code&gt; or &lt;code class=&quot;highlighter-rouge&quot;&gt;1&lt;/code&gt;.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;mat[i]&lt;/code&gt; is sorted in a non-decreasing way.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;solution&quot;&gt;Solution&lt;/h2&gt;
+
+&lt;p&gt;뭐지 블로그 들킨 거 같은 이 기분… Binary Search 문제 좀 더 풀어야지라고 쓰니까 Binary Search만 나오는 이 기분ㅋㅋㅋ&lt;/p&gt;
+
+&lt;p&gt;각 row에 대해 binary search를 하면서 제일 왼쪽에 있는 1을 찾는다. 찾으면서 이미 1을 찾은 줄에서 나온 column 열보다 뒷부분을 검색하는 줄은 다 스킵한다. 최대 100 x 100이므로 모든 줄을 끝까지 검사한다 해도
+&lt;script type=&quot;math/tex&quot;&gt;100*log_2(100)=663.3856&lt;/script&gt;
+번을 넘지 않는다.&lt;/p&gt;
+
+&lt;div class=&quot;language-c# highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cm&quot;&gt;/**
+ * // This is BinaryMatrix's API interface.
+ * // You should not implement it, or speculate about its implementation
+ * class BinaryMatrix {
+ *     public int Get(int x, int y) {}
+ *     public IList&amp;lt;int&amp;gt; Dimensions() {}
+ * }
+ */&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Solution&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;LeftMostColumnWithOne&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;BinaryMatrix&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;binaryMatrix&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;kt&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dimensions&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;binaryMatrix&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Dimensions&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+        &lt;span class=&quot;kt&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;maxLen&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dimensions&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+        &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;left&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dimensions&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]];&lt;/span&gt;
+        &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;right&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dimensions&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]];&lt;/span&gt;
+        
+        &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dimensions&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;right&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;maxLen&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+        
+        &lt;span class=&quot;kt&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;minRight&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;maxLen&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;kt&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;leftmost&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;maxLen&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;kt&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;notLeftMost&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        
+        &lt;span class=&quot;k&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;notLeftMost&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dimensions&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dimensions&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+                &lt;span class=&quot;c1&quot;&gt;// Console.WriteLine(&quot;Examine &quot; + i.ToString() + &quot;: &quot; + left[i].ToString() + &quot;, &quot; + right[i].ToString());&lt;/span&gt;
+                &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;left&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;continue&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+                
+                &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;left&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;minRight&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;left&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;leftmost&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;left&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]==&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;right&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+                    &lt;span class=&quot;c1&quot;&gt;// Console.WriteLine(&quot;Skip&quot;);&lt;/span&gt;
+                    &lt;span class=&quot;n&quot;&gt;left&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+                    &lt;span class=&quot;n&quot;&gt;notLeftMost&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;++;&lt;/span&gt;
+                    &lt;span class=&quot;k&quot;&gt;continue&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+                &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+                
+                &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;left&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]+&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;==&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;right&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+                    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;binaryMatrix&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;left&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+                        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;leftmost&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;left&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;leftmost&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;left&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+                    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+                    &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;binaryMatrix&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;right&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+                        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;leftmost&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;right&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;leftmost&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;right&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+                    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+                    &lt;span class=&quot;n&quot;&gt;left&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+                    &lt;span class=&quot;n&quot;&gt;notLeftMost&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;++;&lt;/span&gt;
+                    &lt;span class=&quot;k&quot;&gt;continue&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+                &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+                
+                &lt;span class=&quot;kt&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mid&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;left&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;right&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])/&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+                &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;binaryMatrix&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+                    &lt;span class=&quot;c1&quot;&gt;// Console.WriteLine(&quot;discovered 0&quot;);&lt;/span&gt;
+                    &lt;span class=&quot;n&quot;&gt;left&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+                &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+                &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+                    &lt;span class=&quot;c1&quot;&gt;// Console.WriteLine(&quot;discovered 1&quot;);&lt;/span&gt;
+                    &lt;span class=&quot;n&quot;&gt;right&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+                    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mid&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;leftmost&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;leftmost&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+                    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;right&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;minRight&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;minRight&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;right&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+                &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+            &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+            &lt;span class=&quot;c1&quot;&gt;// Console.WriteLine(&quot;-----------------&quot;);&lt;/span&gt;
+            &lt;span class=&quot;c1&quot;&gt;// Console.WriteLine(&quot;leftmost: &quot; + leftmost.ToString() + &quot;, skipCount: &quot; + notLeftMost);&lt;/span&gt;
+            &lt;span class=&quot;c1&quot;&gt;// Console.WriteLine(&quot;-----------------&quot;);&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+        
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;leftmost&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;maxLen&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;leftmost&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;</content><author><name>Alice</name></author><category term="leetcode" /><category term="csharp" /><summary type="html">Problem</summary></entry><entry><title type="html">LeetCode Construct Binary Search Tree from Preorder Traversal</title><link href="https://hyeyoung0112.github.io//leetcode/LeetCode_ConstructBinarySearchTree/" rel="alternate" type="text/html" title="LeetCode Construct Binary Search Tree from Preorder Traversal" /><published>2020-04-20T00:00:00+00:00</published><updated>2020-04-20T14:04:00+00:00</updated><id>https://hyeyoung0112.github.io//leetcode/LeetCode_ConstructBinarySearchTree</id><content type="html" xml:base="https://hyeyoung0112.github.io//leetcode/LeetCode_ConstructBinarySearchTree/">&lt;h2 id=&quot;problem&quot;&gt;Problem&lt;/h2&gt;
+
+&lt;p&gt;Return the root node of a binary &lt;strong&gt;search&lt;/strong&gt; tree that matches the given &lt;code class=&quot;highlighter-rouge&quot;&gt;preorder&lt;/code&gt; traversal.&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;(Recall that a binary search tree is a binary tree where for every node, any descendant of &lt;code class=&quot;highlighter-rouge&quot;&gt;node.left&lt;/code&gt; has a value &lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;&lt;/code&gt; &lt;code class=&quot;highlighter-rouge&quot;&gt;node.val&lt;/code&gt;, and any descendant of &lt;code class=&quot;highlighter-rouge&quot;&gt;node.right&lt;/code&gt; has a value &lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;gt;&lt;/code&gt; &lt;code class=&quot;highlighter-rouge&quot;&gt;node.val&lt;/code&gt;. Also recall that a preorder traversal displays the value of the &lt;code class=&quot;highlighter-rouge&quot;&gt;node&lt;/code&gt; first, then traverses &lt;code class=&quot;highlighter-rouge&quot;&gt;node.left&lt;/code&gt;, then traverses &lt;code class=&quot;highlighter-rouge&quot;&gt;node.right&lt;/code&gt;.)&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Example 1:&lt;/strong&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Input: [8,5,1,7,10,12]
+Output: [8,5,10,1,7,null,12]
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;1 &amp;lt;= preorder.length &amp;lt;= 100&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;The values of &lt;code class=&quot;highlighter-rouge&quot;&gt;preorder&lt;/code&gt; are distinct.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;solution&quot;&gt;Solution&lt;/h2&gt;
+
+&lt;p&gt;Binary Tree니까 preorder traversal 순서대로 binary tree에 그대로 넣어줘서 반환하면 된다.&lt;/p&gt;
+
+&lt;div class=&quot;language-c# highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cm&quot;&gt;/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     public int val;
+ *     public TreeNode left;
+ *     public TreeNode right;
+ *     public TreeNode(int x) { val = x; }
+ * }
+ */&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Solution&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;InsertTreeNode&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;TreeNode&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;root&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;val&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;root&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;val&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;root&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;left&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+                &lt;span class=&quot;n&quot;&gt;TreeNode&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;newNode&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;TreeNode&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;val&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+                &lt;span class=&quot;n&quot;&gt;root&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;left&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;newNode&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+                &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+                &lt;span class=&quot;nf&quot;&gt;InsertTreeNode&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;root&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;left&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;val&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+                &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;root&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;right&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+                &lt;span class=&quot;n&quot;&gt;TreeNode&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;newNode&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;TreeNode&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;val&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+                &lt;span class=&quot;n&quot;&gt;root&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;right&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;newNode&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+                &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+                &lt;span class=&quot;nf&quot;&gt;InsertTreeNode&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;root&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;right&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;val&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+                &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    
+    &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;TreeNode&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;BstFromPreorder&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;preorder&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;TreeNode&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;root&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;TreeNode&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;preorder&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]);&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;preorder&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Length&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;++)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;nf&quot;&gt;InsertTreeNode&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;root&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;preorder&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]);&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;root&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;</content><author><name>Alice</name></author><category term="leetcode" /><category term="csharp" /><summary type="html">Problem</summary></entry><entry><title type="html">LeetCode Search In Rotated Array</title><link href="https://hyeyoung0112.github.io//leetcode/LeetCode_SearchInRotatedArray/" rel="alternate" type="text/html" title="LeetCode Search In Rotated Array" /><published>2020-04-20T00:00:00+00:00</published><updated>2020-04-19T15:48:00+00:00</updated><id>https://hyeyoung0112.github.io//leetcode/LeetCode_SearchInRotatedArray</id><content type="html" xml:base="https://hyeyoung0112.github.io//leetcode/LeetCode_SearchInRotatedArray/">&lt;h2 id=&quot;problem&quot;&gt;Problem&lt;/h2&gt;
+
+&lt;p&gt;Suppose an array sorted in ascending order is rotated at some pivot unknown to you beforehand.&lt;/p&gt;
+
+&lt;p&gt;(i.e., &lt;code class=&quot;highlighter-rouge&quot;&gt;[0,1,2,4,5,6,7]&lt;/code&gt; might become &lt;code class=&quot;highlighter-rouge&quot;&gt;[4,5,6,7,0,1,2]&lt;/code&gt;).&lt;/p&gt;
+
+&lt;p&gt;You are given a target value to search. If found in the array return its index, otherwise return &lt;code class=&quot;highlighter-rouge&quot;&gt;-1&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;You may assume no duplicate exists in the array.&lt;/p&gt;
+
+&lt;p&gt;Your algorithm’s runtime complexity must be in the order of &lt;em&gt;O&lt;/em&gt;(log &lt;em&gt;n&lt;/em&gt;).&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Example 1:&lt;/strong&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Input: nums = [4,5,6,7,0,1,2], target = 0
+Output: 4
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;Example 2:&lt;/strong&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Input: nums = [4,5,6,7,0,1,2], target = 3
+Output: -1
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;solution&quot;&gt;Solution&lt;/h2&gt;
+
+&lt;p&gt;Binary Search 문제는 몇 번을 풀어도 한 번만에 깔끔하게 해결을 못하는 것 같다ㅠㅠ 30일 챌린지 끝나면 Binary Search 문제만 주구장창 풀어봐야지…&lt;/p&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;O(log n)&lt;/code&gt; 으로 해결해야 되기 때문에 우선 얼마만큼 돌아갔는지 찾는 것도 Binary search로 찾아야 한다. 그렇게 시작점을 찾고 나서 Binary Search를 한다. 나는 일단 &lt;code class=&quot;highlighter-rouge&quot;&gt;left, right&lt;/code&gt;를 회전되지 않은 배열에서의 인덱스로 생각하고 (안그러면 binary search 구현하는 게 너무 생각하기 귀찮아진다…) binary search 하면서 배열에 접근할 때만 GetSkewedIndex로 회전된 배열 상의 인덱스로 바꿔서 생각했다.&lt;/p&gt;
+
+&lt;div class=&quot;language-c# highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Solution&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;GetSkewedIndex&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;index&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;skewed&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;index&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;skewed&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;index&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;&amp;gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;index&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;-=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;index&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    
+    &lt;span class=&quot;k&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;SkewedBinarySearch&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nums&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;target&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;left&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;right&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;skewed&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;left&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;right&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;index&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;GetSkewedIndex&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;left&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;skewed&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nums&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Length&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;nums&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;index&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;target&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;index&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;right&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;left&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;index&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;GetSkewedIndex&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;left&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;skewed&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nums&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Length&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;nums&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;index&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;target&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;index&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;index&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;GetSkewedIndex&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;right&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;skewed&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nums&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Length&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;nums&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;index&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;target&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;index&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+        
+        &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mid&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;GetSkewedIndex&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;left&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;right&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)/&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;skewed&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nums&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Length&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;nums&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;target&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;nums&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;target&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;left&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;left&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;right&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)/&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;right&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;left&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;right&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)/&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;SkewedBinarySearch&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;nums&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;target&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;left&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;right&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;skewed&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    
+    &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Search&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nums&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;target&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;nums&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Length&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;nums&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Length&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;target&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nums&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;nums&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Length&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;target&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nums&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;target&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nums&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+        
+        &lt;span class=&quot;kt&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;left&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;kt&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;right&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nums&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Length&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;kt&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mid&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nums&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Length&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;kt&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;start&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;c1&quot;&gt;// if nums[left] &amp;gt; nums[mid], start is in left side&lt;/span&gt;
+        &lt;span class=&quot;c1&quot;&gt;// else if nums[right] &amp;lt; nums[mid], start is in right side&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;start&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;nums&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nums&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;left&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+                &lt;span class=&quot;n&quot;&gt;right&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;nums&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nums&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;right&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+                &lt;span class=&quot;n&quot;&gt;left&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;start&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;mid&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;left&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;right&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)/&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;left&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+                &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;nums&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;left&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nums&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;right&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;start&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;right&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+                &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;start&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;left&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+        
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;SkewedBinarySearch&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;nums&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;target&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nums&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Length&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;start&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;</content><author><name>Alice</name></author><category term="leetcode" /><category term="csharp" /><summary type="html">Problem</summary></entry><entry><title type="html">LeetCode Number Of Islands</title><link href="https://hyeyoung0112.github.io//leetcode/LeetCode_NumberOfIslands/" rel="alternate" type="text/html" title="LeetCode Number Of Islands" /><published>2020-04-19T00:00:00+00:00</published><updated>2020-04-19T05:17:00+00:00</updated><id>https://hyeyoung0112.github.io//leetcode/LeetCode_NumberOfIslands</id><content type="html" xml:base="https://hyeyoung0112.github.io//leetcode/LeetCode_NumberOfIslands/">&lt;h2 id=&quot;problem&quot;&gt;Problem&lt;/h2&gt;
+
+&lt;p&gt;Given a 2d grid map of &lt;code class=&quot;highlighter-rouge&quot;&gt;'1'&lt;/code&gt;s (land) and &lt;code class=&quot;highlighter-rouge&quot;&gt;'0'&lt;/code&gt;s (water), count the number of islands. An island is surrounded by water and is formed by connecting adjacent lands horizontally or vertically. You may assume all four edges of the grid are all surrounded by water.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Example 1:&lt;/strong&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Input:
+11110
+11010
+11000
+00000
+
+Output: 1
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;Example 2:&lt;/strong&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Input:
+11000
+11000
+00100
+00011
+
+Output: 3
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;solution&quot;&gt;Solution&lt;/h2&gt;
+
+&lt;p&gt;BFS/DFS로 풀면 된다.&lt;/p&gt;
+
+&lt;div class=&quot;language-c# highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Solution&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;bool&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;in_range&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x_len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y_len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;=&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x_len&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;=&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;y_len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    
+    &lt;span class=&quot;k&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;bool&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;bfs_search&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;char&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[][]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;grid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;char&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[,]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;searched&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x_len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y_len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;searched&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;sc&quot;&gt;'1'&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;grid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;][&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;sc&quot;&gt;'0'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        
+        &lt;span class=&quot;n&quot;&gt;searched&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;sc&quot;&gt;'1'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        
+        &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[,]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;adjacent&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;},&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+        
+        &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;++)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;in_range&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x_len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y_len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;adjacent&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;adjacent&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]))&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+                &lt;span class=&quot;nf&quot;&gt;bfs_search&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;grid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;searched&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x_len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y_len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;adjacent&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;adjacent&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]);&lt;/span&gt;
+            &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+        
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    
+    &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;NumIslands&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;char&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[][]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;grid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x_len&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;grid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Length&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x_len&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y_len&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;grid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;].&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Length&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;kt&quot;&gt;char&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[,]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;search_grid&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;char&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x_len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y_len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x_len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;++)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;y_len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;++)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+                &lt;span class=&quot;n&quot;&gt;search_grid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;sc&quot;&gt;'0'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+        
+        &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;count&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x_len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;++)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;y_len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;++)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+                &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;bfs_search&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;grid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;search_grid&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x_len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y_len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+                    &lt;span class=&quot;n&quot;&gt;count&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;++;&lt;/span&gt;
+                &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+            &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;count&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;</content><author><name>Alice</name></author><category term="leetcode" /><category term="csharp" /><summary type="html">Problem</summary></entry><entry><title type="html">LeetCode Product of Array Except Self</title><link href="https://hyeyoung0112.github.io//leetcode/LeetCode_ProductOfArrayExceptSelf/" rel="alternate" type="text/html" title="LeetCode Product of Array Except Self" /><published>2020-04-19T00:00:00+00:00</published><updated>2020-04-19T05:19:00+00:00</updated><id>https://hyeyoung0112.github.io//leetcode/LeetCode_ProductOfArrayExceptSelf</id><content type="html" xml:base="https://hyeyoung0112.github.io//leetcode/LeetCode_ProductOfArrayExceptSelf/">&lt;h2 id=&quot;problem&quot;&gt;Problem&lt;/h2&gt;
+
+&lt;p&gt;Given an array &lt;code class=&quot;highlighter-rouge&quot;&gt;nums&lt;/code&gt; of &lt;em&gt;n&lt;/em&gt; integers where &lt;em&gt;n&lt;/em&gt; &amp;gt; 1,  return an array &lt;code class=&quot;highlighter-rouge&quot;&gt;output&lt;/code&gt; such that &lt;code class=&quot;highlighter-rouge&quot;&gt;output[i]&lt;/code&gt; is equal to the product of all the elements of &lt;code class=&quot;highlighter-rouge&quot;&gt;nums&lt;/code&gt; except &lt;code class=&quot;highlighter-rouge&quot;&gt;nums[i]&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Example:&lt;/strong&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Input:  [1,2,3,4]
+Output: [24,12,8,6]
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;Constraint:&lt;/strong&gt; It’s guaranteed that the product of the elements of any prefix or suffix of the array (including the whole array) fits in a 32 bit integer.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt; Please solve it &lt;strong&gt;without division&lt;/strong&gt; and in O(&lt;em&gt;n&lt;/em&gt;).&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Follow up:&lt;/strong&gt;
+Could you solve it with constant space complexity? (The output array &lt;strong&gt;does not&lt;/strong&gt; count as extra space for the purpose of space complexity analysis.)&lt;/p&gt;
+
+&lt;h2 id=&quot;solution&quot;&gt;Solution&lt;/h2&gt;
+
+&lt;p&gt;나누기 없이 풀라니… 방법이 생각 안 나서 일단 나누기로 풀고 Solution 보고 풀었다ㅠㅠ&lt;/p&gt;
+
+&lt;p&gt;이거 풀었던 날 집에 와서 너무 피곤했어서 &lt;code class=&quot;highlighter-rouge&quot;&gt;O(1)&lt;/code&gt; 로 푸는 방법은 적당히 보고 넘어갔었는데 지금 보니까 좀 알 것 같다.&lt;/p&gt;
+
+&lt;h3 id=&quot;첫-번째-풀이&quot;&gt;첫 번째 풀이&lt;/h3&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;left[i]&lt;/code&gt;는 &lt;code class=&quot;highlighter-rouge&quot;&gt;nums[i]&lt;/code&gt; 왼쪽에 있는 원소들의 곱이고 &lt;code class=&quot;highlighter-rouge&quot;&gt;right[i]&lt;/code&gt;는 &lt;code class=&quot;highlighter-rouge&quot;&gt;nums[i]&lt;/code&gt; 오른쪽에 있는 원소들의 곱이다.&lt;/p&gt;
+
+&lt;div class=&quot;language-c# highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Solution&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;ProductExceptSelf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nums&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;N&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nums&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Length&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;left&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+        &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;right&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+        
+        &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;product&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;left&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        
+        &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;++)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;product&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;*=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nums&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;left&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;product&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+        
+        &lt;span class=&quot;n&quot;&gt;product&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;right&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;=&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;--)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;product&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;*=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nums&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;right&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;product&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+        
+        &lt;span class=&quot;n&quot;&gt;nums&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;right&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;nums&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;left&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;++)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;nums&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;left&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;right&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+        
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nums&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;두-번째-풀이&quot;&gt;두 번째 풀이&lt;/h2&gt;
+
+&lt;p&gt;첫 번째 풀이랑 거의 비슷한데 &lt;code class=&quot;highlighter-rouge&quot;&gt;answer[]&lt;/code&gt;에 기존의 &lt;code class=&quot;highlighter-rouge&quot;&gt;left[]&lt;/code&gt;를 저장하고, &lt;code class=&quot;highlighter-rouge&quot;&gt;right[]&lt;/code&gt;를 쓰는 대신 &lt;code class=&quot;highlighter-rouge&quot;&gt;answer[]&lt;/code&gt;를 끝에서부터 채우면서 &lt;code class=&quot;highlighter-rouge&quot;&gt;R&lt;/code&gt;에다가 오른쪽 원소들의 곱을 저장하면서 답을 구하면 된다.&lt;/p&gt;
+
+&lt;div class=&quot;language-c# highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Solution&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;ProductExceptSelf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nums&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;N&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nums&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Length&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;answer&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+        
+        &lt;span class=&quot;n&quot;&gt;answer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        
+        &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;++)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;answer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;answer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nums&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+        
+        &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;R&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;=&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;--)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;answer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;answer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;R&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;R&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;*=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nums&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+        
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;answer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;</content><author><name>Alice</name></author><category term="leetcode" /><category term="csharp" /><summary type="html">Problem</summary></entry><entry><title type="html">LeetCode Valid Parenthesis String</title><link href="https://hyeyoung0112.github.io//leetcode/LeetCode_ValidParenthesisString/" rel="alternate" type="text/html" title="LeetCode Valid Parenthesis String" /><published>2020-04-19T00:00:00+00:00</published><updated>2020-04-19T05:31:00+00:00</updated><id>https://hyeyoung0112.github.io//leetcode/LeetCode_ValidParenthesisString</id><content type="html" xml:base="https://hyeyoung0112.github.io//leetcode/LeetCode_ValidParenthesisString/">&lt;h2 id=&quot;problem&quot;&gt;Problem&lt;/h2&gt;
+
+&lt;p&gt;Given a string containing only three types of characters: ‘(‘, ‘)’ and ‘*’, write a function to check whether this string is valid. We define the validity of a string by these rules:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Any left parenthesis &lt;code class=&quot;highlighter-rouge&quot;&gt;'('&lt;/code&gt; must have a corresponding right parenthesis &lt;code class=&quot;highlighter-rouge&quot;&gt;')'&lt;/code&gt;.&lt;/li&gt;
+  &lt;li&gt;Any right parenthesis &lt;code class=&quot;highlighter-rouge&quot;&gt;')'&lt;/code&gt; must have a corresponding left parenthesis &lt;code class=&quot;highlighter-rouge&quot;&gt;'('&lt;/code&gt;.&lt;/li&gt;
+  &lt;li&gt;Left parenthesis &lt;code class=&quot;highlighter-rouge&quot;&gt;'('&lt;/code&gt; must go before the corresponding right parenthesis &lt;code class=&quot;highlighter-rouge&quot;&gt;')'&lt;/code&gt;.&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;'*'&lt;/code&gt; could be treated as a single right parenthesis &lt;code class=&quot;highlighter-rouge&quot;&gt;')'&lt;/code&gt; or a single left parenthesis &lt;code class=&quot;highlighter-rouge&quot;&gt;'('&lt;/code&gt; or an empty string.&lt;/li&gt;
+  &lt;li&gt;An empty string is also valid.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;strong&gt;Example 1:&lt;/strong&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Input: &quot;()&quot;
+Output: True
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;Example 2:&lt;/strong&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Input: &quot;(*)&quot;
+Output: True
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;Example 3:&lt;/strong&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Input: &quot;(*))&quot;
+Output: True
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;The string size will be in the range [1, 100].&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;solution&quot;&gt;Solution&lt;/h2&gt;
+
+&lt;p&gt;여기저기서 항상 꾸준히 다시 나오는 Parenthesis 문제.&lt;/p&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;lo&lt;/code&gt;가 지금 열려있는 괄호의 최소 개수이고 &lt;code class=&quot;highlighter-rouge&quot;&gt;hi&lt;/code&gt;가 지금 열려있는 괄호의 최대 개수이다. 지금 글자가 &lt;code class=&quot;highlighter-rouge&quot;&gt;'('&lt;/code&gt;이면 열린 괄호의 최소 개수는 무조건 1개 증가하므로 &lt;code class=&quot;highlighter-rouge&quot;&gt;lo&lt;/code&gt;에 1을 더하고, 아닌 경우 괄호가 닫힐 수 있으므로 &lt;code class=&quot;highlighter-rouge&quot;&gt;lo&lt;/code&gt;에 1을 뺀다. 반대로 지금 글자가 &lt;code class=&quot;highlighter-rouge&quot;&gt;')'&lt;/code&gt;라면 괄호가 무조건 1개 닫히므로 &lt;code class=&quot;highlighter-rouge&quot;&gt;hi&lt;/code&gt;에서 1을 뺀다. 아닌 경우에는 &lt;code class=&quot;highlighter-rouge&quot;&gt;hi&lt;/code&gt;에 1을 더한다.&lt;/p&gt;
+
+&lt;p&gt;이렇게 했을 때 열린 괄호의 최대 개수(&lt;code class=&quot;highlighter-rouge&quot;&gt;hi&lt;/code&gt;)가 음수가 되면 괄호가 이상하게 된 것이므로 false를 반환하고, 열린 괄호의 최소 개수는 음수가 될 수는 없으므로 음수인 경우 0으로 바꿔준다. 이렇게 문자열을 모두 훑었을 때 열린 괄호의 최소 개수가 0이어야 모든 괄호가 제대로 닫힌 것이다.&lt;/p&gt;
+
+&lt;div class=&quot;language-c# highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Solution&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;bool&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;CheckValidString&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;lo&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hi&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Length&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;++)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]==&lt;/span&gt;&lt;span class=&quot;sc&quot;&gt;'('&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;lo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;++;&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;lo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;--;&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]!=&lt;/span&gt;&lt;span class=&quot;sc&quot;&gt;')'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hi&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;++;&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hi&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;--;&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hi&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;lo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;==&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;lo&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;lo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;?&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;lo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;lo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;==&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;</content><author><name>Alice</name></author><category term="leetcode" /><category term="csharp" /><summary type="html">Problem</summary></entry></feed>
